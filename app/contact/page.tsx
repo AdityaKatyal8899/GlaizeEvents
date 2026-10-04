@@ -56,7 +56,17 @@ const DAY_HEADERS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 
 export default function ContactPage() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40)
+    }
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   // Step management: 'details' -> 'otp' -> 'event_booking' -> 'confirmed'
   const [currentStep, setCurrentStep] = useState<'details' | 'otp' | 'event_booking' | 'confirmed'>('details')
@@ -107,7 +117,7 @@ export default function ContactPage() {
   }, [currentStep, resendTimer])
 
   useEffect(() => {
-    const revealItems = document.querySelectorAll<HTMLElement>('[data-reveal="section"]')
+    const revealItems = document.querySelectorAll<HTMLElement>('[data-reveal]')
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -115,7 +125,7 @@ export default function ContactPage() {
           observer.unobserve(entry.target)
         }
       })
-    }, { threshold: 0.18, rootMargin: '0px 0px -28% 0px' })
+    }, { threshold: 0, rootMargin: '0px 0px -50% 0px' })
     revealItems.forEach((item) => observer.observe(item))
     return () => observer.disconnect()
   }, [])
@@ -250,7 +260,7 @@ export default function ContactPage() {
       {/* Floating Sticky Hamburger Button */}
       <button
         ref={menuButtonRef}
-        className="floating-menu-toggle"
+        className={`floating-menu-toggle ${isScrolled ? 'is-scrolled' : ''}`}
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={menuOpen}
@@ -294,48 +304,55 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* Page Header with Top Breadcrumb Navigation */}
-      <section className="contact-simple-hero subpage-hero">
-        {/* Navigation Breadcrumb Trail */}
-        <nav aria-label="Breadcrumb" className="site-breadcrumbs">
-          <a href="/" className="crumb-link">Home</a>
-          <span className="crumb-sep">/</span>
-          <a href="/services" className="crumb-link">Services</a>
-          <span className="crumb-sep">/</span>
-          <span className="crumb-active">
-            {currentStep === 'details' && 'Inquiry • 01 Identity'}
-            {currentStep === 'otp' && 'Inquiry • 02 Verification'}
-            {currentStep === 'event_booking' && 'Inquiry • 03 Event & Schedule'}
-            {currentStep === 'confirmed' && 'Inquiry • 04 Confirmed'}
-          </span>
-        </nav>
+      {/* Page Header with Top Breadcrumb Navigation (100dvh centered fold) */}
+      <section className="contact-simple-hero subpage-hero" id="top">
+        <div className="hero-content-wrap">
+          {/* Navigation Breadcrumb Trail */}
+          <nav aria-label="Breadcrumb" className="site-breadcrumbs">
+            <a href="/" className="crumb-link">Home</a>
+            <span className="crumb-sep">/</span>
+            <a href="/services" className="crumb-link">Services</a>
+            <span className="crumb-sep">/</span>
+            <span className="crumb-active">
+              {currentStep === 'details' && 'Inquiry • 01 Identity'}
+              {currentStep === 'otp' && 'Inquiry • 02 Verification'}
+              {currentStep === 'event_booking' && 'Inquiry • 03 Event & Schedule'}
+              {currentStep === 'confirmed' && 'Inquiry • 04 Confirmed'}
+            </span>
+          </nav>
 
-        <div className="contact-top-row">
-          <div className="section-label">
+          <div className="section-label" style={{ marginBottom: '20px' }}>
             <span>04</span>
             <span>Direct Commission & Booking</span>
           </div>
-          <a href="/" className="back-link">
-            <ArrowLeft size={13} /> Back to Home
-          </a>
-        </div>
 
-        <h1>
-          <span className="hero-word-wrap">
-            <span className="hero-word hero-word-first">Let&apos;s start a</span>
-          </span>
-          <br />
-          <span className="hero-word-wrap">
-            <em className="hero-word hero-word-second">conversation.</em>
-          </span>
-        </h1>
-        <p className="contact-simple-intro">
-          Verify your email to explore custom production scale tiers, select your preferred meeting date on our calendar, and schedule directly with our senior event directors.
-        </p>
+          <h1>
+            <span className="hero-word-wrap">
+              <span className="hero-word hero-word-first">Let&apos;s start a</span>
+            </span>
+            <br />
+            <span className="hero-word-wrap">
+              <em className="hero-word hero-word-second font-editorial">conversation.</em>
+            </span>
+          </h1>
+
+          <p className="contact-simple-intro">
+            Verify your email to explore custom production scale tiers, select your preferred meeting date on our calendar, and schedule directly with our <span className="font-editorial">senior event directors</span>.
+          </p>
+
+          <div className="button-row hero-buttons" style={{ marginTop: '24px' }}>
+            <a href="#inquiry-form" className="button button-dark hero-btn">
+              Begin Inquiry <ArrowRight size={13} />
+            </a>
+            <a href="mailto:hello@glaizeevents.com" className="button button-light hero-btn">
+              Email Directly <ArrowDownRight size={13} />
+            </a>
+          </div>
+        </div>
       </section>
 
       {/* Interactive Main Section */}
-      <section className="contact-simple-grid content-section section-rule" data-reveal="section">
+      <section className="contact-simple-grid content-section section-rule" id="inquiry-form" data-reveal="section">
         <div className="form-card-container">
           
           {/* ========================================================================= */}

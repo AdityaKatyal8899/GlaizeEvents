@@ -49,7 +49,17 @@ const leaders = [
 
 export default function AboutPage() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40)
+    }
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     const revealItems = document.querySelectorAll<HTMLElement>('[data-reveal]')
@@ -60,7 +70,7 @@ export default function AboutPage() {
           observer.unobserve(entry.target)
         }
       })
-    }, { threshold: 0, rootMargin: '0px 0px -50% 0px' })
+    }, { threshold: 0, rootMargin: '0px 0px -12% 0px' })
     revealItems.forEach((item) => observer.observe(item))
     return () => observer.disconnect()
   }, [])
@@ -77,7 +87,7 @@ export default function AboutPage() {
       {/* Floating Sticky Hamburger Button */}
       <button
         ref={menuButtonRef}
-        className="floating-menu-toggle"
+        className={`floating-menu-toggle ${isScrolled ? 'is-scrolled' : ''}`}
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={menuOpen}
@@ -121,40 +131,56 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* About Page Hero */}
-      <section className="about-hero subpage-hero">
-        <nav aria-label="Breadcrumb" className="site-breadcrumbs">
-          <a href="/" className="crumb-link">Home</a>
-          <span className="crumb-sep">/</span>
-          <span className="crumb-active">About the Studio</span>
-        </nav>
+      {/* About Page Hero (100dvh centered fold) */}
+      <section className="about-hero subpage-hero" id="top">
+        <div className="hero-content-wrap">
+          <nav aria-label="Breadcrumb" className="site-breadcrumbs">
+            <a href="/" className="crumb-link">Home</a>
+            <span className="crumb-sep">/</span>
+            <span className="crumb-active">About the Studio</span>
+          </nav>
 
-        <div className="section-label">
-          <span>01</span>
-          <span>Studio Profile & Legacy</span>
+          <div className="section-label" style={{ marginBottom: '20px' }}>
+            <span>01</span>
+            <span>Studio Profile & Legacy</span>
+          </div>
+
+          <h1>
+            <span className="hero-word-wrap">
+              <span className="hero-word hero-word-first">Events with</span>
+            </span>
+            <br />
+            <span className="hero-word-wrap">
+              <em className="hero-word hero-word-second font-editorial">intention.</em>
+            </span>
+          </h1>
+
+          <p className="about-lead">
+            Founded in 2014, Glaize Events is a luxury event planning, spatial design, and live production atelier headquartered in Delhi with creative suites in <span className="font-editorial">Mumbai</span>.
+          </p>
+
+          <div className="button-row hero-buttons" style={{ marginTop: '24px' }}>
+            <a className="button button-dark hero-btn" href="/contact">
+              Book Consultation <ArrowRight aria-hidden="true" />
+            </a>
+            <a className="button button-light hero-btn" href="/services">
+              Our Services <ArrowDownRight aria-hidden="true" />
+            </a>
+          </div>
         </div>
+      </section>
 
-        <div className="about-hero-grid">
-          <div>
-            <h1>
-              <span className="hero-word-wrap">
-                <span className="hero-word hero-word-first">Events with</span>
-              </span>
-              <br />
-              <span className="hero-word-wrap">
-                <em className="hero-word hero-word-second">intention.</em>
-              </span>
-            </h1>
-            <p className="about-lead">
-              Founded in 2014, Glaize Events is a luxury event planning, spatial design, and live production atelier headquartered in Delhi with creative suites in Mumbai.
-            </p>
-          </div>
-          <div className="about-hero-image media-frame">
-            <img
-              src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=85"
-              alt="Glaize Events Gala Evening"
-            />
-          </div>
+      {/* Scroll-Revealed Atelier Showcase Section */}
+      <section className="about-showcase content-section" data-reveal="section">
+        <div className="section-label">
+          <span>01.1</span>
+          <span>Atmosphere & Space</span>
+        </div>
+        <div className="about-showcase-media media-frame">
+          <img
+            src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=85"
+            alt="Glaize Events Gala Evening"
+          />
         </div>
       </section>
 
@@ -163,11 +189,11 @@ export default function AboutPage() {
         <div className="about-story-grid">
           <div>
             <span className="eyebrow">Our Philosophy</span>
-            <h2>We design memories that outlive the moment.</h2>
+            <h2>We design <em className="font-editorial">memories</em> that outlive the moment.</h2>
           </div>
           <div className="story-paragraphs">
             <p>
-              We believe great events are not measured simply by scale, but by how deeply they resonate. Whether orchestrating a 4-day royal wedding in Rajasthan, an international tech summit in Mumbai, or an intimate private gathering, we operate at the intersection of architectural discipline and theatrical wonder.
+              We believe great events are not measured simply by scale, but by how deeply they resonate. Whether orchestrating a 4-day royal wedding in Rajasthan, an international tech summit in Mumbai, or an intimate private gathering, we operate at the intersection of architectural discipline and <span className="font-editorial">theatrical wonder</span>.
             </p>
             <p>
               From the initial hand-drawn sketch to the final guest departure under ambient candlelight, our studio brings calm precision, creative courage, and meticulous hospitality to every commission.
@@ -188,8 +214,8 @@ export default function AboutPage() {
           <span>Core Methodology</span>
         </div>
         <div className="section-heading">
-          <h2>The Glaize<br /><em>Standard</em></h2>
-          <p>Four foundational pillars guiding every project from concept sketch to live show execution.</p>
+          <h2>The Glaize<br /><em className="font-editorial">Standard</em></h2>
+          <p>Four foundational pillars guiding every project from concept sketch to <span className="font-editorial">live show execution.</span></p>
         </div>
 
         <div className="about-principles-grid">
@@ -210,7 +236,7 @@ export default function AboutPage() {
           <span>Creative Leadership</span>
         </div>
         <div className="section-heading">
-          <h2>The <em>directors</em></h2>
+          <h2>The <em className="font-editorial">directors</em></h2>
           <p>Experienced creative architects, technical masters, and luxury hospitality veterans.</p>
         </div>
 

@@ -76,9 +76,19 @@ const categories = ['All', 'Weddings', 'Corporate', 'Private', 'Live Events']
 
 export default function PortfolioPage() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const [activeCategory, setActiveCategory] = useState('All')
   const [selectedProject, setSelectedProject] = useState<typeof projectsData[0] | null>(null)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40)
+    }
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     const revealItems = document.querySelectorAll<HTMLElement>('[data-reveal]')
@@ -89,7 +99,7 @@ export default function PortfolioPage() {
           observer.unobserve(entry.target)
         }
       })
-    }, { threshold: 0, rootMargin: '0px 0px -50% 0px' })
+    }, { threshold: 0, rootMargin: '0px 0px -12% 0px' })
     revealItems.forEach((item) => observer.observe(item))
     return () => observer.disconnect()
   }, [activeCategory])
@@ -108,7 +118,7 @@ export default function PortfolioPage() {
       {/* Floating Sticky Hamburger Button */}
       <button
         ref={menuButtonRef}
-        className="floating-menu-toggle"
+        className={`floating-menu-toggle ${isScrolled ? 'is-scrolled' : ''}`}
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={menuOpen}
@@ -152,54 +162,61 @@ export default function PortfolioPage() {
         </div>
       </div>
 
-      {/* Portfolio Hero Header */}
-      <section className="portfolio-hero subpage-hero">
-        <nav aria-label="Breadcrumb" className="site-breadcrumbs">
-          <a href="/" className="crumb-link">Home</a>
-          <span className="crumb-sep">/</span>
-          <span className="crumb-active">Selected Work Archive</span>
-        </nav>
+      {/* Portfolio Hero Header (100dvh centered fold) */}
+      <section className="portfolio-hero subpage-hero" id="top">
+        <div className="hero-content-wrap">
+          <nav aria-label="Breadcrumb" className="site-breadcrumbs">
+            <a href="/" className="crumb-link">Home</a>
+            <span className="crumb-sep">/</span>
+            <span className="crumb-active">Selected Work Archive</span>
+          </nav>
 
-        <div className="section-label">
-          <span>03</span>
-          <span>Selected Work & Archive</span>
-        </div>
-
-        <div className="portfolio-hero-title-grid">
-          <div>
-            <h1>
-              <span className="hero-word-wrap">
-                <span className="hero-word hero-word-first">A few</span>
-              </span>{' '}
-              <span className="hero-word-wrap">
-                <em className="hero-word hero-word-second">moments.</em>
-              </span>
-            </h1>
-            <p className="portfolio-lead">
-              Celebrations and live productions that found their own distinct rhythm, spatial texture, and lasting emotional resonance.
-            </p>
+          <div className="section-label" style={{ marginBottom: '20px' }}>
+            <span>03</span>
+            <span>Selected Work & Archive</span>
           </div>
 
-          <div className="portfolio-category-filter">
-            <span className="filter-label-text">Filter by Discipline:</span>
-            <div className="category-filter-chips">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  className={`filter-chip ${activeCategory === cat ? 'is-active' : ''}`}
-                  onClick={() => setActiveCategory(cat)}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
+          <h1>
+            <span className="hero-word-wrap">
+              <span className="hero-word hero-word-first">A few</span>
+            </span>{' '}
+            <span className="hero-word-wrap">
+              <em className="hero-word hero-word-second font-editorial">moments.</em>
+            </span>
+          </h1>
+
+          <p className="portfolio-lead">
+            Celebrations and live productions that found their own distinct rhythm, spatial texture, and lasting <span className="font-editorial">emotional resonance</span>.
+          </p>
+
+          <div className="button-row hero-buttons" style={{ marginTop: '24px' }}>
+            <a href="/contact" className="button button-dark hero-btn">
+              Commission an Event <ArrowRight size={13} />
+            </a>
+            <a href="#gallery" className="button button-light hero-btn">
+              Explore Archive <ArrowDownRight size={13} />
+            </a>
           </div>
         </div>
       </section>
 
       {/* Portfolio Gallery Grid */}
-      <section className="content-section section-rule portfolio-grid-section">
+      <section className="content-section section-rule portfolio-grid-section" id="gallery" data-reveal="section">
+        <div className="portfolio-category-filter" style={{ marginBottom: '40px' }}>
+          <span className="filter-label-text">Filter by Discipline:</span>
+          <div className="category-filter-chips">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                className={`filter-chip ${activeCategory === cat ? 'is-active' : ''}`}
+                onClick={() => setActiveCategory(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="portfolio-masonry-grid">
           {filteredProjects.map((project, index) => (
             <div
@@ -287,8 +304,8 @@ export default function PortfolioPage() {
       <section className="final-cta content-section section-rule" data-reveal="section">
         <div className="cta-copy">
           <p className="eyebrow">04 / Let&apos;s begin</p>
-          <h2>Ready to orchestrate your next moment?</h2>
-          <p>Schedule a private discovery consultation with our Senior Event Directors.</p>
+          <h2>Ready to orchestrate your <em className="font-editorial">next moment?</em></h2>
+          <p>Schedule a private discovery consultation with our <span className="font-editorial">Senior Event Directors</span>.</p>
           <a className="button button-dark" href="/contact">
             Book Consultation <ArrowRight aria-hidden="true" />
           </a>

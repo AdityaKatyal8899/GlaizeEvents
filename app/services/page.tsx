@@ -87,7 +87,17 @@ const processSteps = [
 
 export default function ServicesPage() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40)
+    }
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     const revealItems = document.querySelectorAll<HTMLElement>('[data-reveal]')
@@ -98,7 +108,7 @@ export default function ServicesPage() {
           observer.unobserve(entry.target)
         }
       })
-    }, { threshold: 0, rootMargin: '0px 0px -50% 0px' })
+    }, { threshold: 0, rootMargin: '0px 0px -12% 0px' })
     revealItems.forEach((item) => observer.observe(item))
     return () => observer.disconnect()
   }, [])
@@ -113,7 +123,7 @@ export default function ServicesPage() {
       {/* Floating Sticky Hamburger Button */}
       <button
         ref={menuButtonRef}
-        className="floating-menu-toggle"
+        className={`floating-menu-toggle ${isScrolled ? 'is-scrolled' : ''}`}
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={menuOpen}
@@ -157,46 +167,56 @@ export default function ServicesPage() {
         </div>
       </div>
 
-      {/* Services Hero Header */}
-      <section className="services-hero subpage-hero">
-        <nav aria-label="Breadcrumb" className="site-breadcrumbs">
-          <a href="/" className="crumb-link">Home</a>
-          <span className="crumb-sep">/</span>
-          <span className="crumb-active">Services & Production</span>
-        </nav>
+      {/* Services Hero Header (100dvh centered fold) */}
+      <section className="services-hero subpage-hero" id="top">
+        <div className="hero-content-wrap">
+          <nav aria-label="Breadcrumb" className="site-breadcrumbs">
+            <a href="/" className="crumb-link">Home</a>
+            <span className="crumb-sep">/</span>
+            <span className="crumb-active">Services & Production</span>
+          </nav>
 
-        <div className="section-label">
-          <span>02</span>
-          <span>What We Orchestrate</span>
-        </div>
-
-        <div className="services-hero-title-grid">
-          <div>
-            <h1>
-              <span className="hero-word-wrap">
-                <span className="hero-word hero-word-first">Production with</span>
-              </span>
-              <br />
-              <span className="hero-word-wrap">
-                <em className="hero-word hero-word-second">distinction.</em>
-              </span>
-            </h1>
-            <p className="services-lead">
-              One considered approach tailored to the scale, acoustic requirements, and aesthetic soul of your occasion.
-            </p>
+          <div className="section-label" style={{ marginBottom: '20px' }}>
+            <span>02</span>
+            <span>What We Orchestrate</span>
           </div>
-          <div className="services-quick-cta-box">
-            <p className="eyebrow">Direct Commission Scheduling</p>
-            <h3>Looking to schedule a bespoke event?</h3>
-            <a href="/contact" className="button button-dark">
-              Plan Your Event <ArrowRight size={14} />
+
+          <h1>
+            <span className="hero-word-wrap">
+              <span className="hero-word hero-word-first">Production with</span>
+            </span>
+            <br />
+            <span className="hero-word-wrap">
+              <em className="hero-word hero-word-second font-editorial">distinction.</em>
+            </span>
+          </h1>
+
+          <p className="services-lead">
+            One considered approach tailored to the scale, acoustic requirements, and <span className="font-editorial">aesthetic soul</span> of your occasion.
+          </p>
+
+          <div className="button-row hero-buttons" style={{ marginTop: '24px' }}>
+            <a href="/contact" className="button button-dark hero-btn">
+              Plan Your Event <ArrowRight size={13} />
+            </a>
+            <a href="/portfolio" className="button button-light hero-btn">
+              View Portfolio <ArrowDownRight size={13} />
             </a>
           </div>
         </div>
       </section>
 
       {/* Detailed Services Deep-Dive */}
-      <section className="content-section section-rule">
+      <section className="content-section section-rule" data-reveal="section">
+        <div className="services-quick-cta-banner" style={{ marginBottom: '60px' }}>
+          <div className="services-quick-cta-box">
+            <p className="eyebrow">Direct Commission Scheduling</p>
+            <h3>Looking to schedule a <span className="font-editorial">bespoke event</span>?</h3>
+            <a href="/contact" className="button button-dark" style={{ width: 'fit-content', marginTop: '12px' }}>
+              Plan Your Event <ArrowRight size={13} />
+            </a>
+          </div>
+        </div>
         <div className="detailed-services-list">
           {servicesData.map((s, index) => (
             <div key={s.num} className="detailed-service-row" data-reveal="card">
@@ -237,8 +257,8 @@ export default function ServicesPage() {
           <span>Execution Roadmap</span>
         </div>
         <div className="section-heading">
-          <h2>From concept<br /><em>to live event.</em></h2>
-          <p>A rigorous, collaborative process ensuring seamless creative translation and calm logistics.</p>
+          <h2>From concept<br /><em className="font-editorial">to live event.</em></h2>
+          <p>A rigorous, collaborative process ensuring seamless creative translation and <span className="font-editorial">calm logistics</span>.</p>
         </div>
 
         <div className="process-grid">
@@ -256,7 +276,7 @@ export default function ServicesPage() {
       <section className="final-cta content-section section-rule" data-reveal="section">
         <div className="cta-copy">
           <p className="eyebrow">04 / Get Started</p>
-          <h2>Let&apos;s create something extraordinary.</h2>
+          <h2>Let&apos;s create something <em className="font-editorial">extraordinary.</em></h2>
           <p>Tell us about your event timeline and our directors will prepare an initial concept direction.</p>
           <a className="button button-dark" href="/contact">
             Schedule Consultation <ArrowRight aria-hidden="true" />
