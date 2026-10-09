@@ -3,76 +3,79 @@
 import { useState, useRef, useEffect } from 'react'
 import { ArrowRight, ArrowDownRight, MapPin, Calendar, Users, X, Sparkles, Layers, ArrowUpRight } from 'lucide-react'
 
+import { SITE_MEDIA } from '@/lib/site-media'
+
 const projectsData = [
   {
-    id: 'royal-wedding',
-    title: 'The Royal Palace Wedding',
-    category: 'Weddings',
-    location: 'Jaipur, Rajasthan',
-    year: '2026',
-    guests: '650 Guests',
-    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=85',
-    overview: 'A 3-day royal destination wedding orchestrated across palace courtyards. Features bespoke brass-crafted mandap architecture, 20,000 hand-threaded marigolds, and dynamic warm-candlelight projection mapping.',
-    highlights: ['Multi-courtyard spatial flow', 'Acoustic classical sitar & live symphony', 'Heritage lighting engineering'],
-  },
-  {
-    id: 'corporate-summit',
-    title: 'Global Tech Leadership Summit',
-    category: 'Corporate',
-    location: 'Mumbai, Maharashtra',
-    year: '2026',
-    guests: '1,200 Delegates',
-    image: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1200&q=85',
-    overview: 'High-level technology conference for global enterprise leaders. Included broadcast-grade 4K kinetic LED curved walls, executive networking lounges, and multi-track hybrid live streaming.',
-    highlights: ['Seamless multi-track keynote AV', 'Zero-latency hybrid broadcast', 'High-security VVIP protocol'],
-  },
-  {
-    id: 'summer-nights',
-    title: 'Summer Nights Live Symphony',
-    category: 'Live Events',
-    location: 'Noida, NCR',
-    year: '2026',
-    guests: '3,500 Attendees',
-    image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=85',
-    overview: 'An open-air amphitheater concert and live orchestral experience. Heavy-duty structural trussing, custom kinetic laser programming, and world-class acoustic engineering.',
-    highlights: ['360-degree surround sound engineering', 'Dynamic laser & kinetic lighting', 'Turnkey crowd flow logistics'],
-  },
-  {
-    id: 'evening-bloom',
-    title: 'An Evening in Bloom',
-    category: 'Private',
-    location: 'Udaipur, Rajasthan',
-    year: '2025',
-    guests: '120 Guests',
-    image: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=1200&q=85',
-    overview: 'An intimate milestone celebration held at a private lakeside estate. Custom botanical pergolas, bespoke tablescapes curated with vintage silverware, and private Michelin-partner dining.',
-    highlights: ['Artisanal floral architecture', 'Secret acoustic performance', 'Bespoke lakeside mixology bar'],
-  },
-  {
-    id: 'heritage-sangeet',
-    title: 'Heritage Sangeet & Lantern Gala',
-    category: 'Weddings',
-    location: 'Jodhpur, Rajasthan',
-    year: '2025',
-    guests: '500 Guests',
-    image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=85',
-    overview: 'A high-energy musical evening set against historic fort ramparts, featuring 1,000 floating water lanterns, custom stage carpentry, and synchronized pyro-spectacles.',
-    highlights: ['Fort rampart projection mapping', 'Custom revolving stage', 'Floating lantern water installations'],
-  },
-  {
-    id: 'brand-premiere',
-    title: 'Automotive World Premiere',
+    id: 'corporate-conference',
+    title: 'Corporate Conference Production',
     category: 'Corporate',
     location: 'Delhi NCR',
+    year: '2026',
+    guests: '400 Delegates',
+    image: SITE_MEDIA.portfolio[0].url,
+    overview: 'Full-scale production for a corporate conference including stage setup, professional sound & AV, LED displays and complete event crew coordination from setup to handover.',
+    highlights: ['Professional stage & AV setup', 'LED screen & display solutions', 'Seamless crew coordination'],
+  },
+  {
+    id: 'brand-activation',
+    title: 'Brand Activation Event',
+    category: 'Corporate',
+    location: 'Mumbai',
+    year: '2026',
+    guests: '600 Attendees',
+    image: SITE_MEDIA.portfolio[1].url,
+    overview: 'Production and on-ground support for a brand activation event — from technical setup to artist coordination and crowd management across a full-day brand experience.',
+    highlights: ['Brand-aligned technical production', 'Artist & entertainment coordination', 'On-ground event support'],
+  },
+  {
+    id: 'live-concert',
+    title: 'Live Concert & Music Show',
+    category: 'Live Events',
+    location: 'Mumbai',
+    year: '2026',
+    guests: '2,000+ Attendees',
+    image: SITE_MEDIA.portfolio[2].url,
+    overview: 'End-to-end production for an open-air live concert — sound systems, stage setup, event lighting, artist coordination and crowd management for a high-energy music show.',
+    highlights: ['Professional sound & stage production', 'Artist coordination & rider support', 'Crowd flow and event logistics'],
+  },
+  {
+    id: 'dandiya-festival',
+    title: 'Dandiya & Festive Night',
+    category: 'Festive',
+    location: 'Noida, NCR',
+    year: '2026',
+    guests: '800 Guests',
+    image: SITE_MEDIA.portfolio[3].url,
+    overview: 'High-energy festive production with DJ setup, stage lighting, professional sound systems and entertainment coordination for a large-scale Dandiya celebration.',
+    highlights: ['DJ & sound setup', 'Festive lighting & stage', 'Entertainment & crowd coordination'],
+  },
+  {
+    id: 'private-evening',
+    title: 'Private Social Evening',
+    category: 'Private',
+    location: 'Delhi',
     year: '2025',
-    guests: '800 Press & VIPs',
-    image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=85',
-    overview: 'Exclusive international media unveil of a flagship luxury electric vehicle with interactive tunnel lighting, holographic unveil sequence, and VIP lounge hospitality.',
-    highlights: ['Holographic vehicle reveal', 'Interactive tunnel lighting', 'International press management'],
+    guests: '150 Guests',
+    image: SITE_MEDIA.portfolio[4].url,
+    overview: 'Intimate private event with curated entertainment, sound setup and dedicated on-ground support for a social gathering — managed with care and clear coordination.',
+    highlights: ['Curated entertainment', 'Professional sound setup', 'Dedicated on-ground coordination'],
+  },
+  {
+    id: 'college-festival',
+    title: 'College & Youth Festival',
+    category: 'Live Events',
+    location: 'Mumbai',
+    year: '2025',
+    guests: '1,500 Students',
+    image: SITE_MEDIA.portfolio[5].url,
+    overview: 'Complete production for a college fest — DJ and artist coordination, stage setup, sound & lighting, and crowd experience management for a full-day youth festival.',
+    highlights: ['DJ & artist coordination', 'Full stage & lighting setup', 'Youth crowd experience management'],
   },
 ]
 
-const categories = ['All', 'Weddings', 'Corporate', 'Private', 'Live Events']
+
+const categories = ['All', 'Corporate', 'Live Events', 'Private', 'Festive']
 
 export default function PortfolioPage() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -111,8 +114,8 @@ export default function PortfolioPage() {
   return (
     <main className="site-shell">
       {/* Floating Brand Wordmark */}
-      <a href="/" className="floating-wordmark" aria-label="Glaize Events home">
-        GLAIZE <span>EVENTS</span>
+      <a href="/" className="floating-wordmark" aria-label="Glaiz Events home">
+        <img src="/logo.png" alt="Glaiz Events" className="floating-logo" />
       </a>
 
       {/* Floating Sticky Hamburger Button */}
@@ -141,7 +144,7 @@ export default function PortfolioPage() {
       >
         <div className="menu-panel" onClick={(e) => e.stopPropagation()}>
           <div className="menu-panel-content">
-            <p className="menu-kicker">Glaize Events / Directory</p>
+            <p className="menu-kicker">Glaiz Events / Directory</p>
             <nav aria-label="Main navigation">
               <a href="/" onClick={() => setMenuOpen(false)}><span>00</span>Home<ArrowDownRight aria-hidden="true" /></a>
               <a href="/about" onClick={() => setMenuOpen(false)}><span>01</span>About<ArrowDownRight aria-hidden="true" /></a>
@@ -155,8 +158,9 @@ export default function PortfolioPage() {
               Book a consultation <ArrowRight aria-hidden="true" />
             </a>
             <div className="menu-details">
-              <span>Delhi / Mumbai / Worldwide</span>
-              <span>hello@glaizeevents.com</span>
+              <span>Worldwide Production Atelier</span>
+              <span>Glaizevents@gmail.com</span>
+              <a href="https://www.instagram.com/glaizevents" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.7)", textDecoration: "none", fontSize: "11px" }}>@glaizevents ↗</a>
             </div>
           </div>
         </div>
@@ -321,7 +325,7 @@ export default function PortfolioPage() {
       {/* Editorial Footer */}
       <footer className="site-footer">
         <div className="footer-brand">
-          <a href="/" className="wordmark">GLAIZE <span>EVENTS</span></a>
+          <a href="/" className="wordmark">GLAIZ <span>EVENTS</span></a>
           <p>Events with intention.</p>
         </div>
         <div className="footer-column">
@@ -334,13 +338,13 @@ export default function PortfolioPage() {
         </div>
         <div className="footer-column">
           <span className="footer-label">Connect</span>
-          <a href="mailto:hello@glaizeevents.com">hello@glaizeevents.com</a>
-          <a href="tel:+911123456789">+91 11 2345 6789</a>
+          <a href="mailto:Glaizevents@gmail.com">Glaizevents@gmail.com</a>
+          <a href="tel:+917982067406">+91 79820 67406</a><a href="https://www.instagram.com/glaizevents" target="_blank" rel="noopener noreferrer">@glaizevents ↗</a>
           <a href="/contact">Book Consultation ↗</a>
         </div>
         <div className="footer-bottom">
-          <span>© 2026 Glaize Events</span>
-          <span>Delhi / Mumbai / Worldwide</span>
+          <span>© 2026 Glaiz Events</span>
+          <span>Worldwide Production Atelier</span>
           <a href="#top">Back to top ↑</a>
         </div>
       </footer>

@@ -1,58 +1,23 @@
 'use client'
 
 import { useState, useRef, useEffect, useMemo } from 'react'
-import { ArrowRight, ArrowDownRight, ArrowLeft, CheckCircle2, ShieldCheck, Mail, Phone, Calendar as CalendarIcon, Clock, Video, Building, RefreshCw, KeyRound, MapPin, User, ChevronLeft, ChevronRight, Sparkles, Check, ChevronRight as BreadcrumbChevron } from 'lucide-react'
+import { ArrowRight, ArrowDownRight, CheckCircle2, ShieldCheck, Mail, Phone, Calendar as CalendarIcon, Clock, Video, RefreshCw, KeyRound, User, ChevronLeft, ChevronRight, AlertCircle, MessageSquare } from 'lucide-react'
 
-// Event Categories
-const eventTypes = [
-  { id: 'wedding', label: 'Wedding', desc: 'Curated ceremonies, receptions & destination celebrations' },
-  { id: 'corporate', label: 'Corporate Summit', desc: 'Leadership retreats, annual galas & global conferences' },
-  { id: 'private', label: 'Private Celebration', desc: 'Milestone anniversaries, intimate dinners & VIP soirees' },
-  { id: 'live', label: 'Live Event / Concert', desc: 'Stage architecture, audio-visual & public productions' },
-  { id: 'brand', label: 'Brand Activation', desc: 'Product launches, fashion runways & immersive pop-ups' },
-]
-
-// Production Scale & Scope Tiers (Capacity & Ambience Focus)
-const productionScales = [
-  {
-    id: 'intimate',
-    title: 'Intimate Gathering',
-    capacity: 'Under 100 Guests',
-    desc: 'Bespoke estate or private salon. Focus on refined floral architecture, artisanal dining curation, and high-touch hospitality.',
-  },
-  {
-    id: 'signature',
-    title: 'Signature Celebration',
-    capacity: '100 – 400 Guests',
-    desc: 'Ballroom or heritage venue. Comprehensive creative direction, custom set fabrication, dynamic lighting, and entertainment management.',
-  },
-  {
-    id: 'grand',
-    title: 'Grand Scale Production',
-    capacity: '400 – 1,000+ Guests',
-    desc: 'Multi-day palace or destination resort. Turnkey spatial transformation, multi-venue logistics, artist hospitality & live stage engineering.',
-  },
-  {
-    id: 'landmark',
-    title: 'Landmark & Global Arena',
-    capacity: '1,000+ / Multi-City',
-    desc: 'Public festival, arena concert, or international summit. Broadcast-grade production, high-security protocol & global deployment.',
-  },
-]
-
-// Time Slots
-const timeSlots = [
-  { id: 'slot-1', time: '11:00 AM – 11:45 AM', period: 'Morning Slot' },
-  { id: 'slot-2', time: '02:00 PM – 02:45 PM', period: 'Afternoon Slot' },
-  { id: 'slot-3', time: '04:30 PM – 05:15 PM', period: 'Late Afternoon' },
-  { id: 'slot-4', time: '06:30 PM – 07:15 PM', period: 'Evening Slot' },
-]
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
 ]
 const DAY_HEADERS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+
+const TIME_PRESETS = [
+  '11:00 AM',
+  '01:30 PM',
+  '03:30 PM',
+  '05:00 PM',
+  '06:30 PM',
+  '08:00 PM',
+]
 
 export default function ContactPage() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -75,20 +40,26 @@ export default function ContactPage() {
   const [fullName, setFullName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
+  const [step1Error, setStep1Error] = useState('')
 
   // OTP State
   const [otpValue, setOtpValue] = useState(['', '', '', ''])
   const [generatedOtp, setGeneratedOtp] = useState('4829')
-  const [otpError, setOtpError] = useState(false)
+  const [otpError, setOtpError] = useState('')
   const [isSendingOtp, setIsSendingOtp] = useState(false)
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false)
   const [resendTimer, setResendTimer] = useState(30)
   const otpInputRefs = useRef<(HTMLInputElement | null)[]>([])
 
-  // Step 2: Event Details & Scaled Selectors
-  const [selectedEventType, setSelectedEventType] = useState('wedding')
-  const [selectedScale, setSelectedScale] = useState('signature')
-  const [customVisionNote, setCustomVisionNote] = useState('')
-  const [meetingType, setMeetingType] = useState<'virtual' | 'in-person'>('virtual')
+  // Step 2: Event Details & Meeting Preferences
+  const [eventType, setEventType] = useState('')
+  const [meetingTime, setMeetingTime] = useState('03:30 PM IST')
+  const [clientNote, setClientNote] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Live Database Booked Dates & Slots
+  const [bookedSlots, setBookedSlots] = useState<{ date: string; timeSlot: string }[]>([])
+  const [bookingApiError, setBookingApiError] = useState('')
 
   // Custom Theme-Followed Calendar State
   const today = useMemo(() => new Date(), [])
@@ -98,12 +69,27 @@ export default function ContactPage() {
     d.setDate(d.getDate() + 3)
     return d
   })
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState(timeSlots[1].time)
-  const [clientNote, setClientNote] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Step 3: Confirmation Data
   const [bookingRef, setBookingRef] = useState('')
+
+  // Fetch live booked slots from MongoDB backend
+  useEffect(() => {
+    async function loadBookedSchedule() {
+      try {
+        const res = await fetch('/api/booked-dates')
+        if (res.ok) {
+          const data = await res.json()
+          if (data.bookedSlots) {
+            setBookedSlots(data.bookedSlots)
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to load booked schedule:', err)
+      }
+    }
+    loadBookedSchedule()
+  }, [])
 
   // Timer countdown for OTP resend
   useEffect(() => {
@@ -134,15 +120,39 @@ export default function ContactPage() {
   const currentMonthIdx = calendarViewDate.getMonth()
   const currentYear = calendarViewDate.getFullYear()
 
+  // Format date helper (YYYY-MM-DD)
+  const formatDateKey = (d: Date) => {
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
   const daysInMonth = useMemo(() => {
     const totalDays = new Date(currentYear, currentMonthIdx + 1, 0).getDate()
     let firstDayIndex = new Date(currentYear, currentMonthIdx, 1).getDay()
     firstDayIndex = (firstDayIndex + 6) % 7
 
-    const days: { dayNumber: number | null; dateObj: Date | null; isPast: boolean; isSelected: boolean; isToday: boolean }[] = []
+    const days: {
+      dayNumber: number | null
+      dateObj: Date | null
+      isPast: boolean
+      isSelected: boolean
+      isToday: boolean
+      isFullyBooked: boolean
+      availableSlotsCount: number
+    }[] = []
 
     for (let i = 0; i < firstDayIndex; i++) {
-      days.push({ dayNumber: null, dateObj: null, isPast: false, isSelected: false, isToday: false })
+      days.push({
+        dayNumber: null,
+        dateObj: null,
+        isPast: false,
+        isSelected: false,
+        isToday: false,
+        isFullyBooked: false,
+        availableSlotsCount: 0,
+      })
     }
 
     for (let d = 1; d <= totalDays; d++) {
@@ -153,12 +163,17 @@ export default function ContactPage() {
         selectedMeetingDate.getMonth() === currentMonthIdx &&
         selectedMeetingDate.getDate() === d
       const isToday = today.getFullYear() === currentYear && today.getMonth() === currentMonthIdx && today.getDate() === d
+      
+      const key = formatDateKey(dateObj)
+      const bookedCount = bookedSlots.filter((slot) => slot.date === key).length
+      const availableSlotsCount = Math.max(0, 6 - bookedCount)
+      const isFullyBooked = availableSlotsCount === 0
 
-      days.push({ dayNumber: d, dateObj, isPast, isSelected, isToday })
+      days.push({ dayNumber: d, dateObj, isPast, isSelected, isToday, isFullyBooked, availableSlotsCount })
     }
 
     return days
-  }, [currentYear, currentMonthIdx, selectedMeetingDate, today])
+  }, [currentYear, currentMonthIdx, selectedMeetingDate, today, bookedSlots])
 
   const handlePrevMonth = () => {
     setCalendarViewDate(new Date(currentYear, currentMonthIdx - 1, 1))
@@ -168,26 +183,45 @@ export default function ContactPage() {
     setCalendarViewDate(new Date(currentYear, currentMonthIdx + 1, 1))
   }
 
-  const handleSelectDate = (dateObj: Date | null, isPast: boolean) => {
-    if (!dateObj || isPast) return
+  const handleSelectDate = (dateObj: Date | null, isPast: boolean, isFullyBooked: boolean) => {
+    if (!dateObj || isPast || isFullyBooked) return
     setSelectedMeetingDate(dateObj)
+    setBookingApiError('')
   }
 
-  // Handle Send OTP
-  const handleRequestOtp = (e: React.FormEvent) => {
+  // Handle Send OTP via Backend API
+  const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault()
+    setStep1Error('')
     if (!email || !fullName || !phone) return
 
     setIsSendingOtp(true)
-    setTimeout(() => {
-      setIsSendingOtp(false)
-      const randomCode = Math.floor(1000 + Math.random() * 9000).toString()
-      setGeneratedOtp(randomCode)
+    try {
+      const response = await fetch('/api/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fullName }),
+      })
+
+      const data = await response.json()
+      if (!response.ok || !data.success) {
+        setStep1Error(data.error || 'Failed to send verification code. Please try again.')
+        setIsSendingOtp(false)
+        return
+      }
+
+      if (data.demoCode) {
+        setGeneratedOtp(data.demoCode)
+      }
       setOtpValue(['', '', '', ''])
-      setOtpError(false)
+      setOtpError('')
       setResendTimer(30)
       setCurrentStep('otp')
-    }, 700)
+    } catch (err: any) {
+      setStep1Error(err?.message || 'Network error. Please try again.')
+    } finally {
+      setIsSendingOtp(false)
+    }
   }
 
   // Handle OTP Input Change
@@ -196,7 +230,7 @@ export default function ContactPage() {
     const newOtp = [...otpValue]
     newOtp[index] = val.slice(-1)
     setOtpValue(newOtp)
-    setOtpError(false)
+    setOtpError('')
 
     if (val && index < 3) {
       otpInputRefs.current[index + 1]?.focus()
@@ -209,33 +243,81 @@ export default function ContactPage() {
     }
   }
 
-  // Verify OTP
-  const handleVerifyOtp = (e: React.FormEvent) => {
+  // Verify OTP via Backend API
+  const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault()
     const entered = otpValue.join('')
-    if (entered === generatedOtp || entered === '4829') {
-      setCurrentStep('event_booking')
-    } else {
-      setOtpError(true)
+    if (entered.length < 4) return
+
+    setIsVerifyingOtp(true)
+    setOtpError('')
+
+    try {
+      const response = await fetch('/api/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code: entered }),
+      })
+
+      const data = await response.json()
+      if (response.ok && data.verified) {
+        setCurrentStep('event_booking')
+      } else {
+        setOtpError(data.error || 'Invalid verification code. Please check and try again.')
+      }
+    } catch (err: any) {
+      setOtpError('Failed to verify code. Please check your connection and try again.')
+    } finally {
+      setIsVerifyingOtp(false)
     }
   }
 
   const handleAutoFillOtp = () => {
     setOtpValue(generatedOtp.split(''))
-    setOtpError(false)
+    setOtpError('')
   }
 
-  // Final Meeting Submission
-  const handleFinalSubmit = (e: React.FormEvent) => {
+  // Final Meeting Submission via Backend API
+  const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!selectedMeetingDate || !eventType.trim()) return
+
     setIsSubmitting(true)
-    setTimeout(() => {
-      setIsSubmitting(false)
-      const refCode = `GLZ-${Math.floor(1000 + Math.random() * 9000)}`
-      setBookingRef(refCode)
+    setBookingApiError('')
+
+    try {
+      const response = await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName,
+          phone,
+          email,
+          selectedEventType: eventType.trim(),
+          selectedScale: 'Bespoke Production Scope',
+          meetingType: 'virtual',
+          meetingDate: selectedMeetingDate.toISOString(),
+          timeSlot: meetingTime.trim() || '11:00 AM IST',
+          clientNote: clientNote.trim(),
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
+        setBookingApiError(data.error || 'Unable to schedule consultation. Please check the details and retry.')
+        setIsSubmitting(false)
+        return
+      }
+
+      setBookingRef(data.bookingRef || `GLZ-${Math.floor(1000 + Math.random() * 9000)}`)
       setCurrentStep('confirmed')
       window.scrollTo({ top: 0, behavior: 'smooth' })
-    }, 850)
+    } catch (err: any) {
+      setBookingApiError(err?.message || 'Network error while confirming your consultation. Please retry.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const formattedSelectedDate = useMemo(() => {
@@ -248,13 +330,11 @@ export default function ContactPage() {
     })
   }, [selectedMeetingDate])
 
-  const navItems = ['About', 'Services', 'Portfolio', 'Testimonials', 'Contact']
-
   return (
     <main className="site-shell">
       {/* Floating Brand Wordmark */}
-      <a href="/" className="floating-wordmark" aria-label="Glaize Events home">
-        GLAIZE <span>EVENTS</span>
+      <a href="/" className="floating-wordmark" aria-label="Glaiz Events home">
+        <img src="/logo.png" alt="Glaiz Events" className="floating-logo" />
       </a>
 
       {/* Floating Sticky Hamburger Button */}
@@ -283,7 +363,7 @@ export default function ContactPage() {
       >
         <div className="menu-panel" onClick={(e) => e.stopPropagation()}>
           <div className="menu-panel-content">
-            <p className="menu-kicker">Glaize Events / Directory</p>
+            <p className="menu-kicker">Glaiz Events / Directory</p>
             <nav aria-label="Main navigation">
               <a href="/" onClick={() => setMenuOpen(false)}><span>00</span>Home<ArrowDownRight aria-hidden="true" /></a>
               <a href="/about" onClick={() => setMenuOpen(false)}><span>01</span>About<ArrowDownRight aria-hidden="true" /></a>
@@ -297,8 +377,9 @@ export default function ContactPage() {
               Book a consultation <ArrowRight aria-hidden="true" />
             </a>
             <div className="menu-details">
-              <span>Delhi / Mumbai / Worldwide</span>
-              <span>hello@glaizeevents.com</span>
+              <span>Worldwide Production Atelier</span>
+              <span>Glaizevents@gmail.com</span>
+              <a href="https://www.instagram.com/glaizevents" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.7)", textDecoration: "none", fontSize: "11px" }}>@glaizevents ↗</a>
             </div>
           </div>
         </div>
@@ -337,14 +418,14 @@ export default function ContactPage() {
           </h1>
 
           <p className="contact-simple-intro">
-            Verify your email to explore custom production scale tiers, select your preferred meeting date on our calendar, and schedule directly with our <span className="font-editorial">senior event directors</span>.
+            Verify your email, tell us about your occasion, select your preferred date on our calendar, and schedule directly with our <span className="font-editorial">lead event directors</span>.
           </p>
 
           <div className="button-row hero-buttons" style={{ marginTop: '24px' }}>
             <a href="#inquiry-form" className="button button-dark hero-btn">
               Begin Inquiry <ArrowRight size={13} />
             </a>
-            <a href="mailto:hello@glaizeevents.com" className="button button-light hero-btn">
+            <a href="mailto:Glaizevents@gmail.com" className="button button-light hero-btn">
               Email Directly <ArrowDownRight size={13} />
             </a>
           </div>
@@ -388,7 +469,7 @@ export default function ContactPage() {
               disabled={['details', 'otp'].includes(currentStep)}
             >
               <span className="step-circle">{currentStep === 'confirmed' ? '✓' : '3'}</span>
-              <span className="step-label-text">Event & Calendar</span>
+              <span className="step-label-text">Event & Schedule</span>
             </button>
 
             <div className={`progress-line ${currentStep === 'confirmed' ? 'is-active-line' : ''}`} />
@@ -409,6 +490,13 @@ export default function ContactPage() {
                 <h2>Your Information</h2>
                 <p>Enter your contact details. We will send a one-time verification code to authenticate your commission.</p>
               </div>
+
+              {step1Error && (
+                <div style={{ padding: '12px 16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', color: '#fca5a5', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <AlertCircle size={15} />
+                  <span>{step1Error}</span>
+                </div>
+              )}
 
               <div className="field-group">
                 <label htmlFor="name">Full Name *</label>
@@ -521,16 +609,22 @@ export default function ContactPage() {
               </div>
 
               {otpError && (
-                <p className="otp-error-text">Invalid code. Please check the 4-digit code and try again.</p>
+                <p className="otp-error-text">{otpError}</p>
               )}
 
               <button
                 type="submit"
-                disabled={otpValue.some((v) => !v)}
+                disabled={isVerifyingOtp || otpValue.some((v) => !v)}
                 className="button button-dark submit-button animated-btn"
               >
-                <span>Verify & Proceed to Booking</span>
-                <ArrowRight size={15} />
+                {isVerifyingOtp ? (
+                  <span>Authenticating...</span>
+                ) : (
+                  <>
+                    <span>Verify & Proceed to Booking</span>
+                    <ArrowRight size={15} />
+                  </>
+                )}
               </button>
 
               <div className="otp-footer-actions">
@@ -539,12 +633,7 @@ export default function ContactPage() {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => {
-                      const newCode = Math.floor(1000 + Math.random() * 9000).toString()
-                      setGeneratedOtp(newCode)
-                      setResendTimer(30)
-                      setOtpValue(['', '', '', ''])
-                    }}
+                    onClick={handleRequestOtp}
                     className="text-link-btn"
                   >
                     <RefreshCw size={12} /> Resend Code
@@ -562,7 +651,7 @@ export default function ContactPage() {
           )}
 
           {/* ========================================================================= */}
-          {/* STEP 2: Event Type, Scaled Selector & Theme-Followed Custom Calendar */}
+          {/* STEP 2: Manual Event Type & Custom Theme-Followed Calendar & Timing */}
           {/* ========================================================================= */}
           {currentStep === 'event_booking' && (
             <form onSubmit={handleFinalSubmit} className="simple-contact-form step-animated-panel">
@@ -577,110 +666,51 @@ export default function ContactPage() {
                 </button>
               </div>
 
+              {bookingApiError && (
+                <div style={{ marginTop: '16px', padding: '12px 16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', color: '#fca5a5', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <AlertCircle size={15} />
+                  <span>{bookingApiError}</span>
+                </div>
+              )}
+
               <div className="form-card-header" style={{ marginTop: '20px' }}>
                 <span className="card-step-badge">Step 2 of 2</span>
-                <h2>Event Scale & Meeting Schedule</h2>
-                <p>Select your event category, choose your production scale, and pick a meeting slot on our calendar.</p>
+                <h2>Event Details & Virtual Schedule</h2>
+                <p>Provide your event occasion, choose a preferred date on our calendar, and specify your meeting time.</p>
               </div>
 
-              {/* 1. Event Type Selection */}
+              {/* Virtual Consultation Notice Pill */}
+              <div style={{ background: 'var(--card)', border: '1px solid var(--line)', padding: '14px 18px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'rgba(154, 111, 68, 0.15)', border: '1px solid var(--accent)', display: 'grid', placeItems: 'center', color: 'var(--accent)', flexShrink: 0 }}>
+                  <Video size={16} />
+                </div>
+                <div>
+                  <strong style={{ fontSize: '13px', color: 'var(--heading)', display: 'block' }}>Virtual Discovery Session</strong>
+                  <span style={{ fontSize: '12px', color: 'var(--muted)' }}>Discovery meetings are conducted via Google Meet with our Lead Event Director.</span>
+                </div>
+              </div>
+
+              {/* 1. Manual Event Type Input */}
               <div className="field-group">
-                <label>1. Select Event Type *</label>
-                <div className="event-type-pills">
-                  {eventTypes.map((type) => (
-                    <button
-                      type="button"
-                      key={type.id}
-                      className={`event-pill-btn ${selectedEventType === type.id ? 'is-active' : ''}`}
-                      onClick={() => setSelectedEventType(type.id)}
-                    >
-                      <div className="pill-header-row">
-                        <span className="pill-title">{type.label}</span>
-                        {selectedEventType === type.id && <Check size={14} className="active-check" />}
-                      </div>
-                      <span className="pill-desc">{type.desc}</span>
-                    </button>
-                  ))}
-                </div>
+                <label htmlFor="event-type">1. Event Type / Occasion *</label>
+                <input
+                  id="event-type"
+                  type="text"
+                  required
+                  placeholder="e.g. 3-Day Royal Wedding in Rajasthan, Tech Leadership Summit, Private Birthday Gala..."
+                  value={eventType}
+                  onChange={(e) => setEventType(e.target.value)}
+                  className="editorial-input"
+                />
               </div>
 
-              {/* 2. Scaled Production Selector (Luxury Alternative to Raw Budget Numbers) */}
-              <div className="field-group" style={{ marginTop: '28px' }}>
-                <div className="section-sub-header">
-                  <label>2. Production Scale & Footprint *</label>
-                  <span className="sub-helper">Select the intended tier of spatial & decor execution</span>
-                </div>
-                <div className="scale-selector-grid">
-                  {productionScales.map((scale) => (
-                    <button
-                      type="button"
-                      key={scale.id}
-                      className={`scale-card ${selectedScale === scale.id ? 'is-active' : ''}`}
-                      onClick={() => setSelectedScale(scale.id)}
-                    >
-                      <div className="scale-card-top">
-                        <div>
-                          <strong>{scale.title}</strong>
-                          <span className="capacity-badge">{scale.capacity}</span>
-                        </div>
-                        <span className={`scale-radio ${selectedScale === scale.id ? 'selected' : ''}`} />
-                      </div>
-                      <p className="scale-desc">{scale.desc}</p>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Optional Custom Event Brief Notes */}
-                <div className="custom-budget-optional">
-                  <label htmlFor="custom-vision">Optional: Venue, Theme or Special Requests</label>
-                  <input
-                    id="custom-vision"
-                    type="text"
-                    placeholder="e.g. Heritage palace in Rajasthan, specific date window, or floral/acoustic preferences"
-                    value={customVisionNote}
-                    onChange={(e) => setCustomVisionNote(e.target.value)}
-                    className="editorial-input"
-                  />
-                </div>
-              </div>
-
-              {/* 3. Meeting Format Selector */}
-              <div className="field-group" style={{ marginTop: '28px' }}>
-                <label>3. Consultation Meeting Format *</label>
-                <div className="meeting-format-cards">
-                  <button
-                    type="button"
-                    className={`format-card ${meetingType === 'virtual' ? 'is-active' : ''}`}
-                    onClick={() => setMeetingType('virtual')}
-                  >
-                    <div className="format-header">
-                      <Video size={18} />
-                      <strong>Virtual Video Call</strong>
-                    </div>
-                    <p>Google Meet / Zoom discovery session with our Lead Event Director.</p>
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`format-card ${meetingType === 'in-person' ? 'is-active' : ''}`}
-                    onClick={() => setMeetingType('in-person')}
-                  >
-                    <div className="format-header">
-                      <Building size={18} />
-                      <strong>In-Person Studio Meeting</strong>
-                    </div>
-                    <p>Meet in person at our Delhi Chattarpur Studio or Mumbai Design Suite.</p>
-                  </button>
-                </div>
-              </div>
-
-              {/* 4. Bespoke Theme-Followed Interactive Calendar Picker */}
+              {/* 2. Bespoke Theme-Followed Interactive Calendar Picker */}
               <div className="field-group calendar-field-group" style={{ marginTop: '28px' }}>
                 <div className="calendar-section-heading">
                   <div>
                     <label>
                       <CalendarIcon size={14} style={{ display: 'inline', marginRight: 6 }} />
-                      4. Choose Meeting Date *
+                      2. Choose Meeting Date *
                     </label>
                     <span className="selected-date-display">{formattedSelectedDate}</span>
                   </div>
@@ -730,11 +760,17 @@ export default function ContactPage() {
                         <button
                           key={`day-${dayItem.dayNumber}`}
                           type="button"
-                          disabled={dayItem.isPast}
-                          onClick={() => handleSelectDate(dayItem.dateObj, dayItem.isPast)}
-                          className={`cal-day-btn ${dayItem.isPast ? 'is-past' : ''} ${dayItem.isSelected ? 'is-selected' : ''} ${dayItem.isToday ? 'is-today' : ''}`}
+                          disabled={dayItem.isPast || dayItem.isFullyBooked}
+                          onClick={() => handleSelectDate(dayItem.dateObj, dayItem.isPast, dayItem.isFullyBooked)}
+                          className={`cal-day-btn ${dayItem.isPast ? 'is-past' : ''} ${dayItem.isFullyBooked ? 'is-fully-booked' : ''} ${dayItem.isSelected ? 'is-selected' : ''} ${dayItem.isToday ? 'is-today' : ''}`}
+                          title={dayItem.isFullyBooked ? 'All slots booked for this date' : `${dayItem.availableSlotsCount}/6 slots available`}
                         >
-                          <span>{dayItem.dayNumber}</span>
+                          <span className="cal-day-num">{dayItem.dayNumber}</span>
+                          {!dayItem.isPast && (
+                            <span className={`cal-slot-badge ${dayItem.isFullyBooked ? 'is-full' : dayItem.availableSlotsCount < 6 ? 'is-limited' : ''}`}>
+                              {dayItem.isFullyBooked ? 'FULL' : `${dayItem.availableSlotsCount}/6`}
+                            </span>
+                          )}
                         </button>
                       )
                     })}
@@ -742,41 +778,61 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* 5. Custom Theme Time Slot Selector */}
-              <div className="field-group" style={{ marginTop: '24px' }}>
+              {/* 3. Manual Meeting Time Input + Quick Presets */}
+              <div className="field-group" style={{ marginTop: '28px' }}>
                 <div className="section-sub-header">
-                  <label>
+                  <label htmlFor="meeting-time">
                     <Clock size={14} style={{ display: 'inline', marginRight: 6 }} />
-                    5. Select Preferred Time Slot (IST) *
+                    3. Preferred Meeting Time (IST) *
                   </label>
-                  <span className="sub-helper">45-minute dedicated discovery session</span>
+                  <span className="sub-helper">Type your preferred time or click a preset below</span>
                 </div>
 
-                <div className="time-slots-grid">
-                  {timeSlots.map((slot) => {
-                    const isSelected = selectedTimeSlot === slot.time
-                    return (
-                      <button
-                        type="button"
-                        key={slot.id}
-                        className={`time-slot-pill ${isSelected ? 'is-active' : ''}`}
-                        onClick={() => setSelectedTimeSlot(slot.time)}
-                      >
-                        <span className="slot-time">{slot.time}</span>
-                        <span className="slot-period">{slot.period}</span>
-                      </button>
-                    )
-                  })}
+                <div className="input-with-icon" style={{ marginTop: '8px' }}>
+                  <Clock size={16} className="input-icon" />
+                  <input
+                    id="meeting-time"
+                    type="text"
+                    required
+                    placeholder="e.g. 03:30 PM IST, 11:00 AM, or 18:00"
+                    value={meetingTime}
+                    onChange={(e) => setMeetingTime(e.target.value)}
+                    className="editorial-input"
+                  />
+                </div>
+
+                {/* Quick Time Presets */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '10px' }}>
+                  {TIME_PRESETS.map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => setMeetingTime(`${preset} IST`)}
+                      style={{
+                        background: meetingTime.includes(preset) ? 'var(--ink)' : 'var(--paper)',
+                        color: meetingTime.includes(preset) ? 'var(--paper)' : 'var(--ink)',
+                        border: '1px solid var(--line)',
+                        padding: '6px 12px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        borderRadius: '4px',
+                        transition: 'all .15s ease',
+                      }}
+                    >
+                      {preset}
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              {/* 6. Special Notes (Optional) */}
+              {/* 4. Special Notes & Venue/Vision Details (Optional) */}
               <div className="field-group" style={{ marginTop: '24px' }}>
-                <label htmlFor="client-note">Special Notes or Questions (Optional)</label>
+                <label htmlFor="client-note">4. Vision, Venue & Special Requests (Optional)</label>
                 <textarea
                   id="client-note"
                   rows={3}
-                  placeholder="Share details on venue preferences, dates, theme ideas, or guest count..."
+                  placeholder="Share details on your intended venue, guest count, aesthetic theme, or questions..."
                   value={clientNote}
                   onChange={(e) => setClientNote(e.target.value)}
                   className="editorial-input textarea-input"
@@ -786,15 +842,15 @@ export default function ContactPage() {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isSubmitting || !selectedMeetingDate}
+                disabled={isSubmitting || !selectedMeetingDate || !eventType.trim() || !meetingTime.trim()}
                 className="button button-dark submit-button animated-btn"
                 style={{ marginTop: '20px' }}
               >
                 {isSubmitting ? (
-                  <span>Scheduling Your Commission Consultation...</span>
+                  <span>Scheduling Your Virtual Consultation...</span>
                 ) : (
                   <>
-                    <span>Confirm & Schedule Meeting</span>
+                    <span>Confirm & Schedule Virtual Meeting</span>
                     <ArrowRight size={15} />
                   </>
                 )}
@@ -813,7 +869,7 @@ export default function ContactPage() {
               <span className="card-step-badge">Meeting Confirmed</span>
               <h2>Appointment Scheduled</h2>
               <p className="confirmed-sub">
-                Thank you, <strong>{fullName}</strong>. Your consultation has been confirmed with our Lead Event Director.
+                Thank you, <strong>{fullName}</strong>. Your virtual discovery consultation has been confirmed with our Lead Event Director.
               </p>
 
               <div className="confirmed-details-box">
@@ -823,7 +879,7 @@ export default function ContactPage() {
                 </div>
                 <div className="detail-line">
                   <span>Meeting Format:</span>
-                  <strong>{meetingType === 'virtual' ? 'Google Meet Video Call' : 'In-Person Studio Meeting'}</strong>
+                  <strong>Virtual Discovery Call (Google Meet)</strong>
                 </div>
                 <div className="detail-line">
                   <span>Confirmed Date:</span>
@@ -831,24 +887,20 @@ export default function ContactPage() {
                 </div>
                 <div className="detail-line">
                   <span>Confirmed Time:</span>
-                  <strong>{selectedTimeSlot}</strong>
+                  <strong>{meetingTime}</strong>
                 </div>
                 <div className="detail-line">
-                  <span>Event Category:</span>
-                  <strong>{eventTypes.find((e) => e.id === selectedEventType)?.label}</strong>
+                  <span>Event Occasion:</span>
+                  <strong>{eventType}</strong>
                 </div>
-                <div className="detail-line">
-                  <span>Production Scale:</span>
-                  <strong>{productionScales.find((p) => p.id === selectedScale)?.title}</strong>
-                </div>
-                {customVisionNote && (
+                {clientNote && (
                   <div className="detail-line">
                     <span>Vision & Venue Note:</span>
-                    <strong>{customVisionNote}</strong>
+                    <strong>{clientNote}</strong>
                   </div>
                 )}
                 <div className="detail-line">
-                  <span>Calendar Invite:</span>
+                  <span>Calendar & Video Invite:</span>
                   <span className="sent-badge">Dispatched to {email}</span>
                 </div>
               </div>
@@ -862,6 +914,7 @@ export default function ContactPage() {
                   onClick={() => {
                     setCurrentStep('details')
                     setOtpValue(['', '', '', ''])
+                    setEventType('')
                   }}
                   className="button button-light"
                 >
@@ -872,42 +925,43 @@ export default function ContactPage() {
           )}
         </div>
 
-        {/* Right Sidebar */}
+        {/* Right Sidebar — Clean Direct & Virtual Focus */}
         <div className="simple-contact-sidebar">
           <div className="sidebar-card">
             <span className="sidebar-header-label">Direct Communication</span>
             <div className="direct-item">
               <strong>Official Desk</strong>
-              <a href="mailto:hello@glaizeevents.com" className="sidebar-link">
-                <Mail size={13} /> hello@glaizeevents.com
+              <a href="mailto:Glaizevents@gmail.com" className="sidebar-link">
+                <Mail size={13} /> Glaizevents@gmail.com
               </a>
             </div>
             <div className="direct-item">
               <strong>Studio Phone / WhatsApp</strong>
-              <a href="tel:+911123456789" className="sidebar-link">
-                <Phone size={13} /> +91 11 2345 6789
+              <a href="tel:+917982067406" className="sidebar-link">
+                <Phone size={13} /> +91 79820 67406
+              </a>
+            </div>
+            <div className="direct-item">
+              <strong>Instagram Atelier</strong>
+              <a href="https://www.instagram.com/glaizevents" target="_blank" rel="noopener noreferrer" className="sidebar-link">
+                <MessageSquare size={13} /> @glaizevents ↗
               </a>
             </div>
           </div>
 
           <div className="sidebar-card">
-            <span className="sidebar-header-label">Studio Offices</span>
+            <span className="sidebar-header-label">Virtual Atelier</span>
             <div className="office-item">
-              <strong><MapPin size={13} /> Delhi Design Atelier</strong>
-              <p>The Dhan Mill, 100 Feet Road, Chattarpur, New Delhi 110074</p>
-              <span className="hours-tag">Mon – Sat • 10:00 – 19:00 IST</span>
-            </div>
-            <div className="office-item" style={{ marginTop: '16px' }}>
-              <strong><MapPin size={13} /> Mumbai Meeting Suite</strong>
-              <p>Senapati Bapat Marg, Lower Parel, Mumbai 400013</p>
-              <span className="hours-tag">By Confirmed Appointment Only</span>
+              <strong><Video size={13} /> Seamless Online Discovery</strong>
+              <p>We work with clients across India and globally, orchestrating destination productions through dedicated virtual creative direction sessions.</p>
+              <span className="hours-tag">Available Worldwide • By Confirmed Booking</span>
             </div>
           </div>
 
           <div className="sidebar-card security-note-card">
             <span className="sidebar-header-label">Client Assurance</span>
             <p className="security-text">
-              <ShieldCheck size={14} /> All event inquiries, dates, and production scopes are held under strict non-disclosure.
+              <ShieldCheck size={14} /> All event inquiries, dates, budgets, and production scopes are held under strict non-disclosure.
             </p>
           </div>
         </div>
@@ -916,7 +970,7 @@ export default function ContactPage() {
       {/* Editorial Footer */}
       <footer className="site-footer">
         <div className="footer-brand">
-          <a href="/" className="wordmark">GLAIZE <span>EVENTS</span></a>
+          <a href="/" className="wordmark">GLAIZ <span>EVENTS</span></a>
           <p>Events with intention.</p>
         </div>
         <div className="footer-column">
@@ -929,13 +983,13 @@ export default function ContactPage() {
         </div>
         <div className="footer-column">
           <span className="footer-label">Connect</span>
-          <a href="mailto:hello@glaizeevents.com">hello@glaizeevents.com</a>
-          <a href="tel:+911123456789">+91 11 2345 6789</a>
+          <a href="mailto:Glaizevents@gmail.com">Glaizevents@gmail.com</a>
+          <a href="tel:+917982067406">+91 79820 67406</a><a href="https://www.instagram.com/glaizevents" target="_blank" rel="noopener noreferrer">@glaizevents ↗</a>
           <a href="/contact">Book Consultation ↗</a>
         </div>
         <div className="footer-bottom">
-          <span>© 2026 Glaize Events</span>
-          <span>Delhi / Mumbai / Worldwide</span>
+          <span>© 2026 Glaiz Events</span>
+          <span>Worldwide Production Atelier</span>
           <a href="#top">Back to top ↑</a>
         </div>
       </footer>

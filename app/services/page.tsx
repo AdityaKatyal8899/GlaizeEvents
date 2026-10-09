@@ -3,85 +3,88 @@
 import { useState, useRef, useEffect } from 'react'
 import { ArrowRight, ArrowDownRight, Check, Sparkles, Layers, Sliders, Music, Compass, Shield, ArrowUpRight } from 'lucide-react'
 
+import { SITE_MEDIA } from '@/lib/site-media'
+
 const servicesData = [
   {
     num: '01',
-    title: 'Luxury Weddings & Destination Nuptials',
-    tagline: 'Thoughtful celebrations shaped around your story.',
-    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=85',
-    desc: 'From royal destination palaces in Rajasthan to private cliffside estates, we design multi-day wedding experiences where cultural reverence meets contemporary editorial design.',
+    title: 'Event Management & Coordination',
+    tagline: 'Planning, coordination, scheduling and on-ground support.',
+    image: SITE_MEDIA.services.corporate.url,
+    desc: 'From initial brief to final execution, we manage the full event workflow — coordinating vendors, timelines, artists and technical teams so you stay focused on your objectives.',
     capabilities: [
-      'Multi-day ceremony architecture & spatial decor',
-      'Destination venue acquisition & hotel buyouts',
-      'Bespoke culinary curation & guest concierge',
-      'Artist programming & ritual choreography',
-      'VIP protocol, logistics & seamless transport',
+      'End-to-end event planning & scheduling',
+      'Vendor & supplier coordination',
+      'On-ground event support & crew management',
+      'Run-of-show management & timing',
+      'Flexible solutions for all event sizes & budgets',
     ],
   },
   {
     num: '02',
-    title: 'Corporate Summits & Annual Galas',
-    tagline: 'Clear ideas, considered details, seamless delivery.',
-    image: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1200&q=85',
-    desc: 'High-stakes executive conferences, tech product launches, and annual leadership galas requiring flawless technical precision, brand alignment, and VVIP security.',
+    title: 'Event Production',
+    tagline: 'Sound, lighting, stage, LED and technical setup.',
+    image: SITE_MEDIA.services.live.url,
+    desc: 'We handle complete production setup — professional sound systems, stage lighting, LED display solutions, podiums and AV equipment coordination for events of any scale.',
     capabilities: [
-      'Broadcast-grade stage & audio-visual engineering',
-      'Keynote presentation scenography & dynamic lighting',
-      'Executive networking lounges & breakout environments',
-      'Seamless multi-track scheduling & run-of-show',
-      'Hybrid streaming & international media facilitation',
+      'Professional sound systems & monitoring',
+      'Stage lighting & event lighting',
+      'LED screens & display solutions',
+      'Stage, podium & technical setup',
+      'DJ consoles & music equipment',
     ],
   },
   {
     num: '03',
-    title: 'Private Celebrations & VIP Soirees',
-    tagline: 'Intimate gatherings with a distinct sense of place.',
-    image: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=1200&q=85',
-    desc: 'Milestone birthdays, private estate dinners, and VIP gatherings crafted with absolute privacy, bespoke culinary concepts, and immersive atmospheric design.',
+    title: 'Corporate & Brand Events',
+    tagline: 'Professional production for conferences, launches and celebrations.',
+    image: SITE_MEDIA.services.corporate.url,
+    desc: 'Dependable production support for corporate conferences, brand activations, product launches, annual gatherings and employee celebrations — with clear communication throughout.',
     capabilities: [
-      'Custom dining scenography & tablescape curation',
-      'Private mixology & Michelin-partner gastronomy',
-      'Acoustic music curation & secret performances',
-      'Strict privacy & non-disclosure compliance',
-      'Complete home or estate spatial transformation',
+      'Conference & product launch production',
+      'Brand activation & experiential support',
+      'AV setup & presentation coordination',
+      'Multi-track event scheduling',
+      'Vendor & crew coordination',
     ],
   },
   {
     num: '04',
-    title: 'Live Concerts & Public Productions',
-    tagline: 'Energy, atmosphere and production that stays with you.',
-    image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=85',
-    desc: 'Large-scale arena shows, cultural festivals, and experiential brand activations designed to handle thousands of guests with electrifying energy and safety.',
+    title: 'Artist Management & Entertainment',
+    tagline: 'Indian & Punjabi artist sourcing, booking and event-day support.',
+    image: SITE_MEDIA.services.celebration.url,
+    desc: 'We coordinate Indian and Punjabi artists for events and brand requirements — from availability checks and commercial negotiation to event-day artist support and technical riders.',
     capabilities: [
-      'Heavy-duty trussing, rigging & arena staging',
-      'Dynamic laser, kinetic lighting & 3D projection mapping',
-      'Crowd flow architecture & emergency contingency',
-      'Artist rider fulfillment & green-room hospitality',
-      'Government licensing & municipal permissions',
+      'Artist sourcing & availability coordination',
+      'Commercial booking & contract support',
+      'DJ & live musician coordination',
+      'Event-day artist management & support',
+      'Entertainment curation for all event formats',
     ],
   },
 ]
 
+
 const processSteps = [
   {
     step: '01',
-    title: 'Discover & Align',
-    desc: 'We conduct a deep discovery session to understand your vision, cultural sensibilities, acoustic requirements, and spatial footprint.',
+    title: 'Brief & Understand',
+    desc: 'We take your event brief — date, venue, audience, budget and technical requirements — to understand the objective and build the right plan.',
   },
   {
     step: '02',
-    title: 'Concept & Scenography',
-    desc: 'Our design team develops comprehensive 3D moodboards, lighting plans, spatial floorplans, and material palettes for your sign-off.',
+    title: 'Proposal & Planning',
+    desc: 'We suggest a suitable production and entertainment setup and share a clear commercial proposal tailored to your event format and budget.',
   },
   {
     step: '03',
-    title: 'Engineering & Logistics',
-    desc: 'We coordinate with vetted master vendors, conduct acoustic tuning, construct custom set elements, and formulate minute-by-minute run-of-show schedules.',
+    title: 'Coordination',
+    desc: 'Our team coordinates vendors, artists, equipment and all event-day logistics — keeping communication clear and timelines on track.',
   },
   {
     step: '04',
-    title: 'Flawless Execution',
-    desc: 'On-site directors orchestrate every detail in real-time, ensuring an effortless, transcendent experience for you and your guests.',
+    title: 'On-Ground Execution',
+    desc: 'We focus on smooth setup, timely coordination and professional on-ground execution — from the first truck arriving to the final handover.',
   },
 ]
 
@@ -116,8 +119,8 @@ export default function ServicesPage() {
   return (
     <main className="site-shell">
       {/* Floating Brand Wordmark */}
-      <a href="/" className="floating-wordmark" aria-label="Glaize Events home">
-        GLAIZE <span>EVENTS</span>
+      <a href="/" className="floating-wordmark" aria-label="Glaiz Events home">
+        <img src="/logo.png" alt="Glaiz Events" className="floating-logo" />
       </a>
 
       {/* Floating Sticky Hamburger Button */}
@@ -146,7 +149,7 @@ export default function ServicesPage() {
       >
         <div className="menu-panel" onClick={(e) => e.stopPropagation()}>
           <div className="menu-panel-content">
-            <p className="menu-kicker">Glaize Events / Directory</p>
+            <p className="menu-kicker">Glaiz Events / Directory</p>
             <nav aria-label="Main navigation">
               <a href="/" onClick={() => setMenuOpen(false)}><span>00</span>Home<ArrowDownRight aria-hidden="true" /></a>
               <a href="/about" onClick={() => setMenuOpen(false)}><span>01</span>About<ArrowDownRight aria-hidden="true" /></a>
@@ -160,8 +163,9 @@ export default function ServicesPage() {
               Book a consultation <ArrowRight aria-hidden="true" />
             </a>
             <div className="menu-details">
-              <span>Delhi / Mumbai / Worldwide</span>
-              <span>hello@glaizeevents.com</span>
+              <span>Worldwide Production Atelier</span>
+              <span>Glaizevents@gmail.com</span>
+              <a href="https://www.instagram.com/glaizevents" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.7)", textDecoration: "none", fontSize: "11px" }}>@glaizevents ↗</a>
             </div>
           </div>
         </div>
@@ -183,16 +187,16 @@ export default function ServicesPage() {
 
           <h1>
             <span className="hero-word-wrap">
-              <span className="hero-word hero-word-first">Production with</span>
+              <span className="hero-word hero-word-first">Your vision.</span>
             </span>
             <br />
             <span className="hero-word-wrap">
-              <em className="hero-word hero-word-second font-editorial">distinction.</em>
+              <em className="hero-word hero-word-second font-editorial">Our execution.</em>
             </span>
           </h1>
 
           <p className="services-lead">
-            One considered approach tailored to the scale, acoustic requirements, and <span className="font-editorial">aesthetic soul</span> of your occasion.
+            One reliable partner for event management, production and entertainment — tailored to your event format, audience and <span className="font-editorial">budget.</span>
           </p>
 
           <div className="button-row hero-buttons" style={{ marginTop: '24px' }}>
@@ -293,7 +297,7 @@ export default function ServicesPage() {
       {/* Editorial Footer */}
       <footer className="site-footer">
         <div className="footer-brand">
-          <a href="/" className="wordmark">GLAIZE <span>EVENTS</span></a>
+          <a href="/" className="wordmark">GLAIZ <span>EVENTS</span></a>
           <p>Events with intention.</p>
         </div>
         <div className="footer-column">
@@ -306,13 +310,13 @@ export default function ServicesPage() {
         </div>
         <div className="footer-column">
           <span className="footer-label">Connect</span>
-          <a href="mailto:hello@glaizeevents.com">hello@glaizeevents.com</a>
-          <a href="tel:+911123456789">+91 11 2345 6789</a>
+          <a href="mailto:Glaizevents@gmail.com">Glaizevents@gmail.com</a>
+          <a href="tel:+917982067406">+91 79820 67406</a><a href="https://www.instagram.com/glaizevents" target="_blank" rel="noopener noreferrer">@glaizevents ↗</a>
           <a href="/contact">Book Consultation ↗</a>
         </div>
         <div className="footer-bottom">
-          <span>© 2026 Glaize Events</span>
-          <span>Delhi / Mumbai / Worldwide</span>
+          <span>© 2026 Glaiz Events</span>
+          <span>Worldwide Production Atelier</span>
           <a href="#top">Back to top ↑</a>
         </div>
       </footer>

@@ -3,49 +3,41 @@
 import { useState, useRef, useEffect } from 'react'
 import { ArrowRight, ArrowDownRight, MapPin, Sparkles, Award, Users, ShieldCheck, HeartHandshake, ArrowUpRight } from 'lucide-react'
 
+import { SITE_MEDIA } from '@/lib/site-media'
+
 const principles = [
   {
     num: '01',
-    title: 'Creative Direction with Depth',
-    desc: 'We never duplicate themes or rely on standard event tropes. Every gathering begins with a clean slate, translating your brand or personal narrative into cohesive spatial architecture.',
+    title: 'Understand Your Objective',
+    desc: 'Every project starts with a clear brief. We take time to understand your event format, audience, venue, budget and what success looks like — then build around it.',
   },
   {
     num: '02',
-    title: 'Calm Technical Logistics',
-    desc: 'Behind our breathtaking aesthetics is a rigorous military-grade production engine: structural engineering, precise acoustic tuning, and contingency planning for every split second.',
+    title: 'Dependable Execution',
+    desc: 'Our approach is built around clear coordination and reliable on-ground execution. We manage vendors, artists and technical teams so the event runs exactly as planned.',
   },
   {
     num: '03',
-    title: 'Curated Global Network',
-    desc: 'Over 10+ years, we have built trusted relationships with Michelin-star culinary masters, international acoustic designers, master floral sculptors, and heritage venues.',
+    title: 'Flexible Collaboration',
+    desc: 'We work with clients, planners, brands and event partners across India, Philippines and Thailand — adapting our support to your specific requirements and budget.',
   },
   {
     num: '04',
-    title: 'Discreet High-Touch Hospitality',
-    desc: 'From high-security VVIP protocols to bespoke guest concierges, our team operates with quiet discretion, ensuring hosts and guests immerse fully without stress.',
+    title: 'Single Point of Coordination',
+    desc: 'One team handles everything — production, entertainment, logistics and vendor management. Clear communication and timely updates throughout every project.',
   },
 ]
 
 const leaders = [
   {
-    name: 'Devansh Verma',
+    name: 'Kunal Rathor',
     role: 'Founder & Principal Creative Director',
-    bio: 'With over a decade orchestrating high-profile destination weddings and cultural summits across India and Europe, Devansh brings an architectural sensibility and editorial eye to every commission.',
-    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=85',
-  },
-  {
-    name: 'Ananya Sen',
-    role: 'Director of Production & Spatial Scenography',
-    bio: 'Specializing in transformative lighting design, stage architecture, and live acoustic environments, Ananya transforms blank arenas and heritage grounds into sensory wonderlands.',
-    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=800&q=85',
-  },
-  {
-    name: 'Kabir Malhotra',
-    role: 'Head of Technical Logistics & VIP Protocol',
-    bio: 'A veteran in large-scale live productions and corporate summits, Kabir oversees technical vendor integrations, precision run-of-show schedules, and security choreography.',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=85',
+    bio: 'Leading event management, production coordination and artist booking across corporate, live and private events — with a focus on clear execution and reliable partnerships across India and international markets.',
+    image: SITE_MEDIA.about.leaders[0].url,
   },
 ]
+
+
 
 export default function AboutPage() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -80,8 +72,8 @@ export default function AboutPage() {
   return (
     <main className="site-shell">
       {/* Floating Brand Wordmark */}
-      <a href="/" className="floating-wordmark" aria-label="Glaize Events home">
-        GLAIZE <span>EVENTS</span>
+      <a href="/" className="floating-wordmark" aria-label="Glaiz Events home">
+        <img src="/logo.png" alt="Glaiz Events" className="floating-logo" />
       </a>
 
       {/* Floating Sticky Hamburger Button */}
@@ -110,7 +102,7 @@ export default function AboutPage() {
       >
         <div className="menu-panel" onClick={(e) => e.stopPropagation()}>
           <div className="menu-panel-content">
-            <p className="menu-kicker">Glaize Events / Directory</p>
+            <p className="menu-kicker">Glaiz Events / Directory</p>
             <nav aria-label="Main navigation">
               <a href="/" onClick={() => setMenuOpen(false)}><span>00</span>Home<ArrowDownRight aria-hidden="true" /></a>
               <a href="/about" onClick={() => setMenuOpen(false)}><span>01</span>About<ArrowDownRight aria-hidden="true" /></a>
@@ -124,8 +116,9 @@ export default function AboutPage() {
               Book a consultation <ArrowRight aria-hidden="true" />
             </a>
             <div className="menu-details">
-              <span>Delhi / Mumbai / Worldwide</span>
-              <span>hello@glaizeevents.com</span>
+              <span>Worldwide Production Atelier</span>
+              <span>Glaizevents@gmail.com</span>
+              <a href="https://www.instagram.com/glaizevents" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.7)", textDecoration: "none", fontSize: "11px" }}>@glaizevents ↗</a>
             </div>
           </div>
         </div>
@@ -156,7 +149,7 @@ export default function AboutPage() {
           </h1>
 
           <p className="about-lead">
-            Founded in 2014, Glaize Events is a luxury event planning, spatial design, and live production atelier headquartered in Delhi with creative suites in <span className="font-editorial">Mumbai</span>.
+            Glaiz Events is an India-based event management and production company focused on creating, coordinating and executing professional events — across India, Philippines and Thailand.
           </p>
 
           <div className="button-row hero-buttons" style={{ marginTop: '24px' }}>
@@ -179,7 +172,7 @@ export default function AboutPage() {
         <div className="about-showcase-media media-frame">
           <img
             src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=85"
-            alt="Glaize Events Gala Evening"
+            alt="Glaiz Events Gala Evening"
           />
         </div>
       </section>
@@ -189,19 +182,19 @@ export default function AboutPage() {
         <div className="about-story-grid">
           <div>
             <span className="eyebrow">Our Philosophy</span>
-            <h2>We design <em className="font-editorial">memories</em> that outlive the moment.</h2>
+            <h2>We deliver events that <em className="font-editorial">work</em> — every time.</h2>
           </div>
           <div className="story-paragraphs">
             <p>
-              We believe great events are not measured simply by scale, but by how deeply they resonate. Whether orchestrating a 4-day royal wedding in Rajasthan, an international tech summit in Mumbai, or an intimate private gathering, we operate at the intersection of architectural discipline and <span className="font-editorial">theatrical wonder</span>.
+              Whether coordinating a 400-delegate corporate conference, a live music show or an intimate private gathering, we bring clear planning, dependable production and flexible collaboration to every project — across event formats, audiences and <span className="font-editorial">budgets.</span>
             </p>
             <p>
-              From the initial hand-drawn sketch to the final guest departure under ambient candlelight, our studio brings calm precision, creative courage, and meticulous hospitality to every commission.
+              From the first brief to the final on-ground handover, our team coordinates vendors, artists and technical crews so clients can focus on what matters most — the event itself.
             </p>
             <div className="studio-badges">
-              <span><Award size={13} /> 10+ Years of Craft</span>
-              <span><ShieldCheck size={13} /> Strict Non-Disclosure Protocol</span>
-              <span><HeartHandshake size={13} /> 100% Curated Vendor Vetting</span>
+              <span><Award size={13} /> Single Point of Coordination</span>
+              <span><ShieldCheck size={13} /> Domestic &amp; International Projects</span>
+              <span><HeartHandshake size={13} /> Production + Entertainment Support</span>
             </div>
           </div>
         </div>
@@ -214,8 +207,8 @@ export default function AboutPage() {
           <span>Core Methodology</span>
         </div>
         <div className="section-heading">
-          <h2>The Glaize<br /><em className="font-editorial">Standard</em></h2>
-          <p>Four foundational pillars guiding every project from concept sketch to <span className="font-editorial">live show execution.</span></p>
+          <h2>The Glaiz<br /><em className="font-editorial">Approach</em></h2>
+          <p>Four working principles guiding every project from the initial brief to <span className="font-editorial">on-ground execution.</span></p>
         </div>
 
         <div className="about-principles-grid">
@@ -229,57 +222,36 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Leadership & Directors */}
+      {/* Leadership & Single Centered Director */}
       <section className="content-section section-rule" data-reveal="section">
         <div className="section-label">
           <span>03</span>
           <span>Creative Leadership</span>
         </div>
-        <div className="section-heading">
-          <h2>The <em className="font-editorial">directors</em></h2>
-          <p>Experienced creative architects, technical masters, and luxury hospitality veterans.</p>
+        <div className="section-heading" style={{ textAlign: 'center', margin: '0 auto 40px', maxWidth: '600px' }}>
+          <h2>The <em className="font-editorial">Director</em></h2>
+          <p>Creative architecture, spatial scenography, and dedicated production direction.</p>
         </div>
 
-        <div className="leaders-grid">
-          {leaders.map((leader) => (
-            <div key={leader.name} className="leader-card" data-reveal="card">
-              <div className="leader-image media-frame">
-                <img src={leader.image} alt={leader.name} />
-              </div>
-              <div className="leader-info">
-                <h3>{leader.name}</h3>
-                <span className="leader-role">{leader.role}</span>
-                <p>{leader.bio}</p>
-              </div>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div className="leader-card" data-reveal="card" style={{ maxWidth: '440px', width: '100%' }}>
+            <div className="leader-image media-frame">
+              <img src={leaders[0].image} alt={leaders[0].name} />
             </div>
-          ))}
+            <div className="leader-info" style={{ textAlign: 'center' }}>
+              <h3>{leaders[0].name}</h3>
+              <span className="leader-role">{leaders[0].role}</span>
+              <p>{leaders[0].bio}</p>
+            </div>
+          </div>
         </div>
-      </section>
-
-      {/* Stats Counter Section */}
-      <section className="stats content-section section-rule" data-reveal="section">
-        <div className="stat">
-          <strong>10<span>+</span></strong>
-          <p>Years of<br />Excellence</p>
-        </div>
-        <div className="stat">
-          <strong>100<span>+</span></strong>
-          <p>Bespoke Events<br />Delivered</p>
-        </div>
-        <div className="stat">
-          <strong>50<span>+</span></strong>
-          <p>Enterprise & Private<br />Clients Served</p>
-        </div>
-        <p className="stat-note">
-          An archive of good company,<br />distinguished guests & lasting impressions.
-        </p>
       </section>
 
       {/* Final Call to Action */}
       <section className="final-cta content-section section-rule" data-reveal="section">
         <div className="cta-copy">
           <p className="eyebrow">Let&apos;s Create Together</p>
-          <h2>Begin your commission with Glaize.</h2>
+          <h2>Begin your commission with Glaiz.</h2>
           <p>Schedule a dedicated discovery consultation with our Senior Event Directors.</p>
           <a className="button button-dark" href="/contact">
             Schedule Consultation <ArrowRight aria-hidden="true" />
@@ -296,7 +268,7 @@ export default function AboutPage() {
       {/* Editorial Footer */}
       <footer className="site-footer">
         <div className="footer-brand">
-          <a href="/" className="wordmark">GLAIZE <span>EVENTS</span></a>
+          <a href="/" className="wordmark">GLAIZ <span>EVENTS</span></a>
           <p>Events with intention.</p>
         </div>
         <div className="footer-column">
@@ -309,13 +281,13 @@ export default function AboutPage() {
         </div>
         <div className="footer-column">
           <span className="footer-label">Connect</span>
-          <a href="mailto:hello@glaizeevents.com">hello@glaizeevents.com</a>
-          <a href="tel:+911123456789">+91 11 2345 6789</a>
+          <a href="mailto:Glaizevents@gmail.com">Glaizevents@gmail.com</a>
+          <a href="tel:+917982067406">+91 79820 67406</a><a href="https://www.instagram.com/glaizevents" target="_blank" rel="noopener noreferrer">@glaizevents ↗</a>
           <a href="/contact">Book Consultation ↗</a>
         </div>
         <div className="footer-bottom">
-          <span>© 2026 Glaize Events</span>
-          <span>Delhi / Mumbai / Worldwide</span>
+          <span>© 2026 Glaiz Events</span>
+          <span>Worldwide Production Atelier</span>
           <a href="#top">Back to top ↑</a>
         </div>
       </footer>

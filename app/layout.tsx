@@ -19,8 +19,8 @@ const instrumentSerif = Instrument_Serif({
 })
 
 export const metadata: Metadata = {
-  title: 'Glaize Events — Events with intention',
-  description: 'Glaize Events creates unforgettable celebrations, corporate events and live experiences from concept to execution.',
+  title: 'Glaiz Events — Events with intention',
+  description: 'Glaiz Events creates unforgettable celebrations, corporate events and live experiences from concept to execution.',
   generator: 'v0.app',
   icons: {
     icon: [

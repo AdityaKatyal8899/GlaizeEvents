@@ -3,28 +3,31 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowDownRight, ArrowRight, Menu, X } from 'lucide-react'
 
+import { SITE_MEDIA } from '@/lib/site-media'
+
 const images = {
-  hero: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1600&q=85',
-  heroDetail: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1000&q=85',
-  wedding: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=85',
-  corporate: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1200&q=85',
-  celebration: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=1200&q=85',
-  live: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=85',
-  cta: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1400&q=85',
+  hero: SITE_MEDIA.home.hero.url,
+  heroDetail: SITE_MEDIA.home.heroDetail.url,
+  wedding: SITE_MEDIA.home.wedding.url,
+  corporate: SITE_MEDIA.home.corporate.url,
+  celebration: SITE_MEDIA.home.celebration.url,
+  live: SITE_MEDIA.home.live.url,
+  cta: SITE_MEDIA.home.cta.url,
 }
 
+
 const services = [
-  ['01', 'Weddings', 'Thoughtful celebrations shaped around your story.', images.wedding],
-  ['02', 'Corporate Events', 'Clear ideas, considered details, seamless delivery.', images.corporate],
-  ['03', 'Private Celebrations', 'Intimate gatherings with a distinct sense of place.', images.celebration],
-  ['04', 'Live Events', 'Energy, atmosphere and production that stays with you.', images.live],
+  ['01', 'Corporate & Brand Events', 'Professional production for conferences, launches and activations.', images.corporate],
+  ['02', 'Live Shows & Concerts', 'Energy, production and crowd experience that stays with you.', images.live],
+  ['03', 'Artist Management', 'Indian & Punjabi artist sourcing, coordination and event-day support.', images.celebration],
+  ['04', 'Event Production', 'Sound, lighting, stage, LED and on-ground technical coordination.', images.wedding],
 ]
 
 const projects = [
-  { title: 'The Royal Wedding', type: 'Wedding', location: 'Delhi', year: '2026', image: images.wedding, className: 'md:col-span-7' },
-  { title: 'Corporate Summit', type: 'Corporate', location: 'Mumbai', year: '2026', image: images.corporate, className: 'md:col-span-5 md:mt-32' },
-  { title: 'Summer Nights', type: 'Live Event', location: 'Noida', year: '2026', image: images.live, className: 'md:col-span-5 md:-mt-16' },
-  { title: 'An Evening in Bloom', type: 'Private', location: 'Jaipur', year: '2025', image: images.celebration, className: 'md:col-span-7 md:mt-16' },
+  { title: 'Corporate Conference Production', type: 'Corporate', location: 'Delhi NCR', year: '2026', image: images.corporate, className: 'md:col-span-7' },
+  { title: 'Live Concert & Music Show', type: 'Live Events', location: 'Mumbai', year: '2026', image: images.live, className: 'md:col-span-5 md:mt-32' },
+  { title: 'Dandiya & Festive Night', type: 'Festive', location: 'Noida', year: '2026', image: images.wedding, className: 'md:col-span-5 md:-mt-16' },
+  { title: 'Private Social Evening', type: 'Private', location: 'Delhi', year: '2025', image: images.celebration, className: 'md:col-span-7 md:mt-16' },
 ]
 
 export default function Page() {
@@ -78,8 +81,8 @@ export default function Page() {
   return (
     <main className="site-shell">
       {/* Floating Wordmark */}
-      <a href="#top" className="floating-wordmark" aria-label="Glaize Events home">
-        GLAIZE <span>EVENTS</span>
+      <a href="#top" className="floating-wordmark" aria-label="Glaiz Events home">
+        <img src="/logo.png" alt="Glaiz Events" className="floating-logo" />
       </a>
 
       {/* Floating Sticky Hamburger Button */}
@@ -108,7 +111,7 @@ export default function Page() {
       >
         <div className="menu-panel" onClick={(e) => e.stopPropagation()}>
           <div className="menu-panel-content">
-            <p className="menu-kicker">Glaize Events / Directory</p>
+            <p className="menu-kicker">Glaiz Events / Directory</p>
             <nav aria-label="Main navigation">
               <a href="/" onClick={() => setMenuOpen(false)}><span>00</span>Home<ArrowDownRight aria-hidden="true" /></a>
               <a href="/about" onClick={() => setMenuOpen(false)}><span>01</span>About<ArrowDownRight aria-hidden="true" /></a>
@@ -122,8 +125,9 @@ export default function Page() {
               Book a consultation <ArrowRight aria-hidden="true" />
             </a>
             <div className="menu-details">
-              <span>Delhi / Mumbai / Worldwide</span>
-              <span>hello@glaizeevents.com</span>
+              <span>Worldwide Production Atelier</span>
+              <span>Glaizevents@gmail.com</span>
+              <a href="https://www.instagram.com/glaizevents" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.7)", textDecoration: "none", fontSize: "11px" }}>@glaizevents ↗</a>
             </div>
           </div>
         </div>
@@ -132,10 +136,10 @@ export default function Page() {
       {/* 1. Full-Screen Typography & CTA First-Fold (100dvh) */}
       <section className="hero-fullscreen" id="top">
         <div className="hero-content-wrap">
-          <p className="eyebrow hero-eyebrow">Event planning & production / Est. 2014</p>
+          <p className="eyebrow hero-eyebrow">Luxury Event Planning & Production</p>
           <h1 className="hero-heading">
             <span className="hero-word-wrap">
-              <span className="hero-word hero-word-glaize">GLAIZE</span>
+              <span className="hero-word hero-word-glaize">GLAIZ</span>
             </span>
             <br />
             <span className="hero-word-wrap">
@@ -143,7 +147,7 @@ export default function Page() {
             </span>
           </h1>
           <p className="hero-intro">
-            We create unforgettable events, from intimate celebrations to large-scale <span className="font-editorial">experiences</span>.
+            Your vision. Our execution. From corporate productions to live concerts and private celebrations — one reliable partner, <span className="font-editorial">end-to-end.</span>
           </p>
           <div className="button-row hero-buttons">
             <a className="button button-dark hero-btn" href="/contact">
@@ -179,13 +183,13 @@ export default function Page() {
       </section>
 
       <section className="intro content-section" id="about" data-reveal="section">
-        <div className="section-label"><span>01</span><span>Why Glaize</span></div>
+        <div className="section-label"><span>01</span><span>Why Glaiz</span></div>
         <div className="intro-grid">
           <h2>Events with<br /><em className="font-editorial">intention.</em></h2>
-          <div className="intro-body"><p>From the first sketch to the final guest departure, Glaize brings creative direction, calm logistics and a deeply personal <span className="font-editorial">point of view</span> to every event.</p><a className="text-link" href="/about">Meet the team & story <ArrowRight aria-hidden="true" /></a></div>
+          <div className="intro-body"><p>From the first brief to on-ground execution, Glaiz Events brings event coordination, production expertise and entertainment support — so you have one reliable partner across every <span className="font-editorial">requirement.</span></p><a className="text-link" href="/about">Meet the team & story <ArrowRight aria-hidden="true" /></a></div>
         </div>
         <div className="principles">
-          {['End-to-end event planning', 'Creative concepts', 'Trusted vendors', 'Precision Production Logistics'].map((item, index) => <a href="/about" className="principle" key={item} data-reveal="row"><span>{String(index + 1).padStart(2, '0')}</span><strong>{item}</strong><ArrowRight aria-hidden="true" /></a>)}
+          {['End-to-end event management', 'Sound, lighting & stage production', 'Artist & entertainment coordination', 'Domestic & international collaboration'].map((item, index) => <a href="/about" className="principle" key={item} data-reveal="row"><span>{String(index + 1).padStart(2, '0')}</span><strong>{item}</strong><ArrowRight aria-hidden="true" /></a>)}
         </div>
       </section>
 
@@ -205,7 +209,7 @@ export default function Page() {
           {projects.map((project, index) => <a className={`project ${project.className}`} href="/portfolio" key={project.title} data-reveal="card"><div className="project-image"><img src={project.image} alt={`${project.title} event photography`} /><span className="project-index">0{index + 1}</span></div><div className="project-caption"><div><h3>{project.title}</h3><p>{project.type} / {project.location}</p></div><span>{project.year}</span></div></a>)}
         </div>
         <div className="service-footer" style={{ marginTop: '48px' }}>
-          <span>Explore our full archive across destination weddings, corporate summits & live productions</span>
+          <span>Explore our full archive across corporate events, live shows, festive productions & private gatherings</span>
           <a className="text-link" href="/portfolio">View full portfolio archive <ArrowRight aria-hidden="true" /></a>
         </div>
       </section>
@@ -216,13 +220,11 @@ export default function Page() {
         <div className="process-grid">{[['01', 'Discover', 'Understand the vision.'], ['02', 'Design', 'Build the concept.'], ['03', 'Plan', 'Coordinate vendors, logistics and execution.'], ['04', 'Deliver', 'Bring the event to life.']].map(([num, title, desc]) => <div className="process-step" key={num}><span>{num}</span><h3>{title}</h3><p>{desc}</p></div>)}</div>
       </section>
 
-      <section className="stats content-section" data-reveal="section"><div className="stat"><strong>10<span>+</span></strong><p>Years of<br />experience</p></div><div className="stat"><strong>100<span>+</span></strong><p>Events<br />delivered</p></div><div className="stat"><strong>50<span>+</span></strong><p>Clients<br />served</p></div><p className="stat-note">A growing archive<br />of good company.</p></section>
-
       <section className="testimonial content-section section-rule" id="testimonials" data-reveal="section"><div className="section-label"><span>05</span><span>Kind words</span></div><div className="quote-mark">“</div><blockquote>They understood the feeling we wanted before we had the words for it. Every detail felt like us, only <span className="font-editorial-italic">more considered</span>.</blockquote><div className="quote-byline"><strong>Rhea & Arjun</strong><span>Private celebration / Delhi</span></div></section>
 
       <section className="final-cta content-section" id="contact" data-reveal="section"><div className="cta-copy"><p className="eyebrow">06 / Let&apos;s begin</p><h2>Let&apos;s create<br />something<br /><em className="font-editorial">memorable.</em></h2><p>Tell us about your event and we&apos;ll take it from <span className="font-editorial">concept to execution.</span></p><a className="button button-dark" href="/contact">Book a consultation <ArrowRight aria-hidden="true" /></a></div><div className="cta-image media-frame"><img src={images.cta} alt="Friends celebrating together beneath outdoor lights" /></div></section>
 
-      <footer className="site-footer"><div className="footer-brand"><a href="/" className="wordmark">GLAIZE <span>EVENTS</span></a><p>Events with intention.</p></div><div className="footer-column"><span className="footer-label">Navigate</span><a href="/">Home</a><a href="/about">About</a><a href="/services">Services</a><a href="/portfolio">Portfolio</a><a href="/contact">Contact</a></div><div className="footer-column"><span className="footer-label">Contact</span><a href="mailto:hello@glaizeevents.com">hello@glaizeevents.com</a><a href="tel:+911123456789">+91 11 2345 6789</a><a href="/contact">Direct Booking ↗</a></div><div className="footer-bottom"><span>© 2026 Glaize Events</span><span>Delhi / Mumbai / Everywhere</span><a href="#top">Back to top ↑</a></div></footer>
+      <footer className="site-footer"><div className="footer-brand"><a href="/" className="wordmark">GLAIZ <span>EVENTS</span></a><p>Events with intention.</p></div><div className="footer-column"><span className="footer-label">Navigate</span><a href="/">Home</a><a href="/about">About</a><a href="/services">Services</a><a href="/portfolio">Portfolio</a><a href="/contact">Contact</a></div><div className="footer-column"><span className="footer-label">Contact</span><a href="mailto:Glaizevents@gmail.com">Glaizevents@gmail.com</a><a href="tel:+917982067406">+91 79820 67406</a><a href="https://www.instagram.com/glaizevents" target="_blank" rel="noopener noreferrer">@glaizevents ↗</a><a href="/contact">Direct Booking ↗</a></div><div className="footer-bottom"><span>© 2026 Glaiz Events</span><span>Worldwide Production Atelier</span><a href="#top">Back to top ↑</a></div></footer>
     </main>
   )
 }

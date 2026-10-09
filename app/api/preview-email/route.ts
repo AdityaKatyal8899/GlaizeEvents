@@ -1,0 +1,637 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { connectToDatabase } from '@/lib/mongodb'
+import { Inquiry } from '@/lib/models/Inquiry'
+
+export async function GET(req: NextRequest) {
+  try {
+    let bookingData: any = null
+
+    // Try fetching the latest booking from MongoDB
+    if (process.env.MONGODB_URI) {
+      try {
+        await connectToDatabase()
+        bookingData = await Inquiry.findOne().sort({ createdAt: -1 })
+      } catch (err) {
+        console.warn('Could not fetch latest inquiry from MongoDB, using fallback:', err)
+      }
+    }
+
+    // Fallback or use fetched DB record
+    const record = bookingData || {
+      bookingRef: 'GLZ-5965',
+      fullName: 'Aditya Katyal',
+      email: 'adityakatyal45678@gmail.com',
+      phone: '7618550297',
+      selectedEventType: 'wedding',
+      selectedScale: 'intimate',
+      meetingType: 'virtual',
+      meetingDate: new Date('2026-10-07T11:00:00.000Z'),
+      timeSlot: '11:00 AM – 11:45 AM',
+      clientNote: 'Testing the booking workflow',
+      createdAt: new Date(),
+    }
+
+    const meetingDateFormatted = new Date(record.meetingDate).toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
+
+    const createdDateFormatted = new Date(record.createdAt || new Date()).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
+
+    const eventTypeMap: Record<string, string> = {
+      wedding: 'Luxury Wedding & Destination Nuptials',
+      corporate: 'Corporate Summit & Gala',
+      private: 'Private Celebration & Soiree',
+      live: 'Live Concert & Public Production',
+      brand: 'Brand Activation & Runway',
+    }
+
+    const scaleMap: Record<string, string> = {
+      intimate: 'Intimate Gathering (<100 Guests)',
+      signature: 'Signature Celebration (100–400 Guests)',
+      grand: 'Grand Scale Production (400–1,000+ Guests)',
+      landmark: 'Landmark Arena & Multi-City',
+    }
+
+    const eventLabel = eventTypeMap[record.selectedEventType] || record.selectedEventType || 'Bespoke Event'
+    const scaleLabel = scaleMap[record.selectedScale] || record.selectedScale || 'Signature Scale'
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consultation Confirmed & Commission Invoice — ${record.bookingRef}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070c18;
+      --card-bg: #0d1527;
+      --card-inner: #111c34;
+      --border-color: #1e2e4f;
+      --border-light: rgba(255, 255, 255, 0.08);
+      --accent-blue: #1e3a8a;
+      --accent-glow: #2563eb;
+      --accent-gold: #c6a87d;
+      --text-white: #ffffff;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-white);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      padding: 40px 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .email-container {
+      max-width: 680px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04);
+    }
+
+    .atelier-header {
+      background: linear-gradient(180deg, #0f1c38 0%, #0d1527 100%);
+      padding: 36px 40px 28px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .brand-wordmark {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-decoration: none;
+      display: block;
+    }
+
+    .brand-wordmark span { font-weight: 300; opacity: 0.75; }
+
+    .brand-tagline {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      margin-top: 4px;
+      font-family: var(--font-mono);
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(30, 58, 138, 0.4);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      color: #93c5fd;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-family: var(--font-mono);
+    }
+
+    .header-badge::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: #38bdf8;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #38bdf8;
+    }
+
+    .letter-body { padding: 40px; }
+
+    .letter-salutation {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent-gold);
+      font-family: var(--font-mono);
+      margin-bottom: 12px;
+    }
+
+    .letter-title {
+      font-size: 32px;
+      font-weight: 600;
+      line-height: 1.25;
+      color: #ffffff;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .letter-title em {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 400;
+      color: #dbeafe;
+    }
+
+    .letter-lead {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 24px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #1e3a8a;
+      color: #ffffff;
+      border: 1px solid #2563eb;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+      border: 1px solid var(--border-light);
+    }
+
+    .invoice-card {
+      background: var(--card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 32px;
+      position: relative;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .invoice-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #1e3a8a, #3b82f6, #c6a87d);
+    }
+
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 24px;
+    }
+
+    .invoice-type {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent-gold);
+      font-family: var(--font-mono);
+      margin-bottom: 4px;
+    }
+
+    .invoice-ref {
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 700;
+      color: #60a5fa;
+      letter-spacing: 0.06em;
+    }
+
+    .invoice-meta {
+      text-align: right;
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    .invoice-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .invoice-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .invoice-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    .invoice-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .invoice-value.highlight { color: #93c5fd; }
+
+    .invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 13px;
+    }
+
+    .invoice-table th {
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-family: var(--font-mono);
+      font-weight: 500;
+    }
+
+    .invoice-table td {
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+    }
+
+    .invoice-table td.amount {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: #f8fafc;
+    }
+
+    .invoice-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 18px;
+      margin-top: 8px;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .total-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .total-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+    }
+
+    .barcode-strip {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .barcode-mock {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.35em;
+      color: var(--text-dim);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 6px 12px;
+      border-radius: 4px;
+    }
+
+    .security-status {
+      font-size: 11px;
+      color: #4ade80;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+    }
+
+    .security-status::before {
+      content: '✓';
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      background: rgba(74, 222, 128, 0.15);
+      border-radius: 50%;
+      font-size: 10px;
+    }
+
+    .print-bar {
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .print-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #111c34;
+      border: 1px solid #2563eb;
+      color: #93c5fd;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      font-family: var(--font-mono);
+    }
+
+    .print-btn:hover {
+      background: #1e3a8a;
+      color: #ffffff;
+    }
+
+    .atelier-footer {
+      background: #090f1d;
+      padding: 32px 40px;
+      border-top: 1px solid var(--border-color);
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .footer-office strong {
+      color: #cbd5e1;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .footer-bottom {
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      color: #475569;
+      font-size: 11px;
+    }
+
+    @media print {
+      body { background: #ffffff !important; color: #000000 !important; padding: 0; }
+      .email-container { border: 1px solid #000000 !important; box-shadow: none !important; background: #ffffff !important; color: #000000 !important; }
+      .atelier-header, .invoice-card, .atelier-footer { background: #ffffff !important; color: #000000 !important; border-color: #cccccc !important; }
+      .brand-wordmark, .letter-title, .invoice-value, .invoice-ref { color: #000000 !important; }
+      .letter-lead, .invoice-label, .total-label { color: #444444 !important; }
+      .print-bar, .action-row { display: none !important; }
+    }
+
+    @media (max-width: 600px) {
+      .atelier-header, .letter-body, .atelier-footer { padding: 24px 20px; }
+      .invoice-card { padding: 20px; }
+      .invoice-grid, .footer-grid { grid-template-columns: 1fr; }
+      .letter-title { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <header class="atelier-header">
+      <div>
+        <a href="https://glaizeevents.com" class="brand-wordmark">GLAIZ <span>EVENTS</span></a>
+        <div class="brand-tagline">Atelier of Spatial Scenography & Production</div>
+      </div>
+      <div class="header-badge">Confirmed Booking</div>
+    </header>
+
+    <main class="letter-body">
+      <div class="letter-salutation">Direct Commission • Consultation Confirmation</div>
+      
+      <h1 class="letter-title">
+        Thank you, ${record.fullName.split(' ')[0]}.<br>
+        We look forward to our <em>conversation.</em>
+      </h1>
+
+      <p class="letter-lead">
+        Your discovery consultation has been confirmed with our senior event production and creative direction team. We have reserved dedicated time to explore your spatial vision, acoustic architecture, and production requirements.
+      </p>
+
+      <div class="action-row">
+        <a href="https://meet.google.com/new" class="btn btn-primary">
+          🎥 Add to Google Calendar
+        </a>
+        <a href="mailto:Glaizevents@gmail.com" class="btn btn-secondary">
+          ✉️ Email Lead Director
+        </a>
+      </div>
+
+      <section class="invoice-card" id="commission-invoice">
+        <div class="invoice-header">
+          <div>
+            <div class="invoice-type">Official Commission Pass & Discovery Invoice</div>
+            <div class="invoice-ref">${record.bookingRef}</div>
+          </div>
+          <div class="invoice-meta">
+            <div>DATE: ${createdDateFormatted}</div>
+            <div>STATUS: AUTHENTICATED</div>
+          </div>
+        </div>
+
+        <div class="invoice-grid">
+          <div class="invoice-item">
+            <span class="invoice-label">Client Name</span>
+            <span class="invoice-value">${record.fullName}</span>
+          </div>
+          <div class="invoice-item">
+            <span class="invoice-label">Email & Phone</span>
+            <span class="invoice-value highlight">${record.email}</span>
+            <span style="font-size: 12px; color: #94a3b8; font-family: var(--font-mono);">+91 ${record.phone}</span>
+          </div>
+          <div class="invoice-item">
+            <span class="invoice-label">Confirmed Appointment Date</span>
+            <span class="invoice-value" style="color: #60a5fa;">${meetingDateFormatted}</span>
+          </div>
+          <div class="invoice-item">
+            <span class="invoice-label">Reserved Time Slot (IST)</span>
+            <span class="invoice-value">${record.timeSlot}</span>
+          </div>
+          <div class="invoice-item">
+            <span class="invoice-label">Meeting Format</span>
+            <span class="invoice-value">🎥 Virtual Discovery Call (Google Meet)</span>
+          </div>
+          <div class="invoice-item">
+            <span class="invoice-label">Event Occasion</span>
+            <span class="invoice-value">${eventLabel}</span>
+          </div>
+        </div>
+
+        <table class="invoice-table">
+          <thead>
+            <tr>
+              <th>Commission Item</th>
+              <th>Scope</th>
+              <th style="text-align: right;">Fee</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <strong>Initial Atelier Discovery Session (45 Min)</strong><br>
+                <span style="font-size: 12px; color: #64748b;">Spatial feasibility, moodboard alignment & technical schedule</span>
+              </td>
+              <td>Dedicated Senior Director</td>
+              <td class="amount">₹0.00 (Complimentary)</td>
+            </tr>
+            <tr>
+              <td>
+                <strong>Bespoke Production Proposal Curation</strong><br>
+                <span style="font-size: 12px; color: #64748b;">Draft spatial architecture, vendor allocation & timeline breakdown</span>
+              </td>
+              <td>Turnkey Production Plan</td>
+              <td class="amount">Included</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="invoice-total-row">
+          <div>
+            <div class="total-label">Consultation Assessment Balance</div>
+            <div style="font-size: 11px; color: #64748b;">Production fees applied upon formal project commissioning</div>
+          </div>
+          <div class="total-value">₹0.00 / CONFIRMED</div>
+        </div>
+
+        <div class="barcode-strip">
+          <div class="barcode-mock">||| | ||||| || |||||| | ${record.bookingRef} ||||</div>
+          <div class="security-status">OTP Verified & Authenticated</div>
+        </div>
+      </section>
+
+      <div class="print-bar">
+        <button type="button" class="print-btn" onclick="window.print()">
+          📄 Print / Save Invoice as PDF
+        </button>
+      </div>
+    </main>
+
+    <footer class="atelier-footer">
+      <div class="footer-grid">
+        <div class="footer-office">
+          <strong>Virtual Production Atelier</strong>
+          <p>Worldwide Discovery Sessions & Turnkey Destination Event Planning</p>
+        </div>
+        <div class="footer-office">
+          <strong>Direct Communication</strong>
+          <p>Glaizevents@gmail.com • +91 79820 67406</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Glaiz Events • Glaizevents@gmail.com</span>
+        <span>Strict Non-Disclosure Guaranteed</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>`
+
+    return new NextResponse(html, {
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+      },
+    })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+}
