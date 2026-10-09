@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { ArrowDownRight, ArrowRight, Menu, X } from 'lucide-react'
-
+import { useEffect } from 'react'
+import { ArrowDownRight, ArrowRight } from 'lucide-react'
+import Navbar from '@/components/Navbar'
 import { SITE_MEDIA } from '@/lib/site-media'
 
 const images = {
@@ -14,7 +14,6 @@ const images = {
   live: SITE_MEDIA.home.live.url,
   cta: SITE_MEDIA.home.cta.url,
 }
-
 
 const services = [
   ['01', 'Corporate & Brand Events', 'Professional production for conferences, launches and activations.', images.corporate],
@@ -31,37 +30,6 @@ const projects = [
 ]
 
 export default function Page() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
-  const menuButtonRef = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40)
-    }
-    handleScroll()
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  useEffect(() => {
-    if (!menuOpen) return
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMenuOpen(false)
-    }
-    document.addEventListener('keydown', onKeyDown)
-    return () => {
-      document.body.style.overflow = previousOverflow
-      document.removeEventListener('keydown', onKeyDown)
-    }
-  }, [menuOpen])
-
-  useEffect(() => {
-    if (!menuOpen) menuButtonRef.current?.focus()
-  }, [menuOpen])
-
   useEffect(() => {
     const revealItems = document.querySelectorAll<HTMLElement>('[data-reveal]')
     const observer = new IntersectionObserver((entries) => {
@@ -76,62 +44,10 @@ export default function Page() {
     return () => observer.disconnect()
   }, [])
 
-  const navItems = ['About', 'Services', 'Portfolio', 'Testimonials', 'Contact']
-
   return (
     <main className="site-shell">
-      {/* Floating Wordmark */}
-      <a href="#top" className="floating-wordmark" aria-label="Glaiz Events home">
-        <img src="/logo.png" alt="Glaiz Events" className="floating-logo" />
-      </a>
-
-      {/* Floating Sticky Hamburger Button */}
-      <button
-        ref={menuButtonRef}
-        className={`floating-menu-toggle ${isScrolled ? 'is-scrolled' : ''}`}
-        onClick={() => setMenuOpen(!menuOpen)}
-        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-        aria-expanded={menuOpen}
-        aria-controls="site-menu"
-      >
-        <span className="menu-lines" aria-hidden="true">
-          <span />
-          <span />
-        </span>
-      </button>
-
-      {/* Full-Screen Blurred Backdrop & Solid Drawer */}
-      <div
-        id="site-menu"
-        className={`menu-overlay ${menuOpen ? 'is-open' : ''}`}
-        aria-hidden={!menuOpen}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) setMenuOpen(false)
-        }}
-      >
-        <div className="menu-panel" onClick={(e) => e.stopPropagation()}>
-          <div className="menu-panel-content">
-            <p className="menu-kicker">Glaiz Events / Directory</p>
-            <nav aria-label="Main navigation">
-              <a href="/" onClick={() => setMenuOpen(false)}><span>00</span>Home<ArrowDownRight aria-hidden="true" /></a>
-              <a href="/about" onClick={() => setMenuOpen(false)}><span>01</span>About<ArrowDownRight aria-hidden="true" /></a>
-              <a href="/services" onClick={() => setMenuOpen(false)}><span>02</span>Services<ArrowDownRight aria-hidden="true" /></a>
-              <a href="/portfolio" onClick={() => setMenuOpen(false)}><span>03</span>Portfolio<ArrowDownRight aria-hidden="true" /></a>
-              <a href="/contact" onClick={() => setMenuOpen(false)}><span>04</span>Contact<ArrowDownRight aria-hidden="true" /></a>
-            </nav>
-          </div>
-          <div className="menu-bottom">
-            <a className="menu-cta" href="/contact" onClick={() => setMenuOpen(false)}>
-              Book a consultation <ArrowRight aria-hidden="true" />
-            </a>
-            <div className="menu-details">
-              <span>Worldwide Production Atelier</span>
-              <span>Glaizevents@gmail.com</span>
-              <a href="https://www.instagram.com/glaizevents" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.7)", textDecoration: "none", fontSize: "11px" }}>@glaizevents ↗</a>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Luxury Horizontal Navigation Bar */}
+      <Navbar />
 
       {/* 1. Full-Screen Typography & CTA First-Fold (100dvh) */}
       <section className="hero-fullscreen" id="top">

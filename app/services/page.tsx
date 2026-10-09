@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useEffect } from 'react'
 import { ArrowRight, ArrowDownRight, Check, Sparkles, Layers, Sliders, Music, Compass, Shield, ArrowUpRight } from 'lucide-react'
-
+import Navbar from '@/components/Navbar'
 import { SITE_MEDIA } from '@/lib/site-media'
 
 const servicesData = [
@@ -89,19 +89,6 @@ const processSteps = [
 ]
 
 export default function ServicesPage() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
-  const menuButtonRef = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40)
-    }
-    handleScroll()
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
   useEffect(() => {
     const revealItems = document.querySelectorAll<HTMLElement>('[data-reveal]')
     const observer = new IntersectionObserver((entries) => {
@@ -118,58 +105,8 @@ export default function ServicesPage() {
 
   return (
     <main className="site-shell">
-      {/* Floating Brand Wordmark */}
-      <a href="/" className="floating-wordmark" aria-label="Glaiz Events home">
-        <img src="/logo.png" alt="Glaiz Events" className="floating-logo" />
-      </a>
-
-      {/* Floating Sticky Hamburger Button */}
-      <button
-        ref={menuButtonRef}
-        className={`floating-menu-toggle ${isScrolled ? 'is-scrolled' : ''}`}
-        onClick={() => setMenuOpen(!menuOpen)}
-        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-        aria-expanded={menuOpen}
-        aria-controls="site-menu"
-      >
-        <span className="menu-lines" aria-hidden="true">
-          <span />
-          <span />
-        </span>
-      </button>
-
-      {/* Full-Screen Blurred Backdrop & Solid Drawer */}
-      <div
-        id="site-menu"
-        className={`menu-overlay ${menuOpen ? 'is-open' : ''}`}
-        aria-hidden={!menuOpen}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) setMenuOpen(false)
-        }}
-      >
-        <div className="menu-panel" onClick={(e) => e.stopPropagation()}>
-          <div className="menu-panel-content">
-            <p className="menu-kicker">Glaiz Events / Directory</p>
-            <nav aria-label="Main navigation">
-              <a href="/" onClick={() => setMenuOpen(false)}><span>00</span>Home<ArrowDownRight aria-hidden="true" /></a>
-              <a href="/about" onClick={() => setMenuOpen(false)}><span>01</span>About<ArrowDownRight aria-hidden="true" /></a>
-              <a href="/services" onClick={() => setMenuOpen(false)}><span>02</span>Services<ArrowDownRight aria-hidden="true" /></a>
-              <a href="/portfolio" onClick={() => setMenuOpen(false)}><span>03</span>Portfolio<ArrowDownRight aria-hidden="true" /></a>
-              <a href="/contact" onClick={() => setMenuOpen(false)}><span>04</span>Contact<ArrowDownRight aria-hidden="true" /></a>
-            </nav>
-          </div>
-          <div className="menu-bottom">
-            <a className="menu-cta" href="/contact" onClick={() => setMenuOpen(false)}>
-              Book a consultation <ArrowRight aria-hidden="true" />
-            </a>
-            <div className="menu-details">
-              <span>Worldwide Production Atelier</span>
-              <span>Glaizevents@gmail.com</span>
-              <a href="https://www.instagram.com/glaizevents" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.7)", textDecoration: "none", fontSize: "11px" }}>@glaizevents ↗</a>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Luxury Horizontal Navigation Bar */}
+      <Navbar />
 
       {/* Services Hero Header (100dvh centered fold) */}
       <section className="services-hero subpage-hero" id="top">
