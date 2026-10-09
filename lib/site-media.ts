@@ -44,12 +44,12 @@ export const SITE_MEDIA = {
     },
     wedding: {
       id: 'home.service.wedding',
-      label: 'Weddings Discipline Showcase',
-      location: 'Homepage — Services Grid 01',
+      label: 'Event Production Discipline Showcase',
+      location: 'Homepage — Services Grid 04',
       aspectRatio: '16:10',
       recommendedResolution: '1200x750px',
       url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=85',
-      alt: 'Royal destination wedding palace mandap',
+      alt: 'Grand event stage and production setup',
     },
     corporate: {
       id: 'home.service.corporate',
@@ -57,7 +57,7 @@ export const SITE_MEDIA = {
       location: 'Homepage — Services Grid 01',
       aspectRatio: '16:10',
       recommendedResolution: '1200x750px',
-      url: '/instagram_post_2_DcfnVLRv5cc.jpg',
+      url: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=85',
       alt: 'Glaiz Events Corporate and Brand Events Management & Production',
     },
     celebration: {
@@ -72,10 +72,10 @@ export const SITE_MEDIA = {
     live: {
       id: 'home.service.live',
       label: 'Live Concerts & Productions Showcase',
-      location: 'Homepage — Services Grid 02 / 04',
+      location: 'Homepage — Services Grid 02',
       aspectRatio: '16:10',
       recommendedResolution: '1200x750px',
-      url: '/instagram_post_1_DdyZLrRvw8b.jpg',
+      url: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=85',
       alt: 'Glaiz Events open-air live concert stage production',
     },
     cta: {
@@ -84,7 +84,7 @@ export const SITE_MEDIA = {
       location: 'Homepage — Final CTA section',
       aspectRatio: '16:9',
       recommendedResolution: '1400x800px',
-      url: '/instagram_post_1_DdyZLrRvw8b.jpg',
+      url: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1400&q=85',
       alt: 'Glaiz Events live production and unforgettable crowd experience',
     },
   },
@@ -125,7 +125,7 @@ export const SITE_MEDIA = {
     },
     corporate: {
       id: 'services.corporate',
-      url: '/instagram_post_2_DcfnVLRv5cc.jpg',
+      url: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=85',
     },
     celebration: {
       id: 'services.celebration',
@@ -133,7 +133,7 @@ export const SITE_MEDIA = {
     },
     live: {
       id: 'services.live',
-      url: '/instagram_post_1_DdyZLrRvw8b.jpg',
+      url: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=85',
     },
   },
 
@@ -141,17 +141,17 @@ export const SITE_MEDIA = {
     {
       id: 'portfolio.corporate-summit',
       title: 'Corporate Conference Production',
-      url: '/instagram_post_2_DcfnVLRv5cc.jpg',
+      url: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=85',
     },
     {
       id: 'portfolio.brand-activation',
       title: 'Brand Activation Event',
-      url: '/instagram_post_2_DcfnVLRv5cc.jpg',
+      url: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1200&q=85',
     },
     {
       id: 'portfolio.summer-nights',
       title: 'Live Concert & Music Show',
-      url: '/instagram_post_1_DdyZLrRvw8b.jpg',
+      url: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=85',
     },
     {
       id: 'portfolio.evening-bloom',
@@ -166,7 +166,7 @@ export const SITE_MEDIA = {
     {
       id: 'portfolio.brand-premiere',
       title: 'College Fest & Campus Live',
-      url: '/instagram_post_1_DdyZLrRvw8b.jpg',
+      url: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=85',
     },
   ],
 }
